@@ -6,11 +6,11 @@ from h5spark import read
 
 class h5pytestinspark(unittest.TestCase):
     def setUp(self):
-        self.csvfile='../resources/hdf5/file_names_and_paths.csv'
-        self.csvfiled='../resources/hdf5/file_names_and_pathsd.csv'
+        self.csvfile='h5spark/resources/hdf5/file_names_and_paths.csv'
+        self.csvfiled='h5spark/resources/hdf5/file_names_and_pathsd.csv'
         self.partitions=1
         self.dname='autoencoded'
-        self.testfpath="../resources/hdf5/16041.h5"
+        self.testfpath="h5spark/resources/hdf5/16041.h5"
         self.testfname="16041.h5"
         self.sc=SparkContext(appName="h5sparkread")
     def tearDown(self):
@@ -30,7 +30,7 @@ class h5pytestinspark(unittest.TestCase):
         #self.assertIn(self.testfname,self.testfile.filename)
 
 
-    """ Test h5spark"""
+    """ Test main.python.h5spark"""
     # read one or more hdf5 files where the input file info is in a csv file
     def test_h5sparkReadmultiple(self):
         self.read=read.readmul

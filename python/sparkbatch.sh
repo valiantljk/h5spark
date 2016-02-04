@@ -15,7 +15,7 @@ module load python/2.7-anaconda
  
 start-all.sh
 
-spark-submit --master $SPARKURL --driver-memory 15G --executor-memory 32G --class org.apache.spark.mllib.linalg.distributed.netCDFTest --conf spark.eventLog.enabled=true --conf spark.eventLog.dir=$SCRATCH/spark/spark_event_logs ./test/h5kread.py
+spark-submit --master $SPARKURL --driver-memory 15G --executor-memory 32G --class org.apache.spark.mllib.linalg.distributed.netCDFTest --conf spark.eventLog.enabled=true --conf spark.eventLog.dir=$SCRATCH/spark/spark_event_logs ./tests/read_tests.py
 
 #module load spark/hist-server
 #./run_history_server.sh $EVENT_LOGS_DIR 

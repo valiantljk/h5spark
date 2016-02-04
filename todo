@@ -1,0 +1,4 @@
+Jan 5 2016
+1. install parallel h5py inside anaconda on mac
+2. install parallel hdf5 on mac
+3. on cori, test mpi inside spark, by initializing spark first then init mpi, or spawn child processes

@@ -31,7 +31,7 @@ class h5pytestinspark(unittest.TestCase):
 
 
     """ Test h5spark"""
-    # read one or more hdf5 files and file info is in a csv file
+    # read one or more hdf5 files where the input file info is in a csv file
     def test_h5sparkReadmultiple(self):
         self.read=read.readmul
         self.file_paths = self.sc.textFile(self.csvfile, minPartitions=self.partitions)

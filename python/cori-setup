@@ -1,1 +1,2 @@
- export PYTHONPATH=$PYTHONPATH:/global/homes/j/jialin/spark-io/h5spark/python/h5spark
+#!/bin/bash
+export PYTHONPATH=$PYTHONPATH:/global/homes/j/jialin/spark-io/h5spark/python/h5spark

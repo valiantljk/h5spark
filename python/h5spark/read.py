@@ -26,12 +26,18 @@ def readones(filename,dataname):
     try:
     	f=h5py.File(filename,'r')
     	d=f[dataname]
-    	return list(d[:])
+	#if d.size>0:
+	try:
+    		a=list(d[:])
+	except PicklingError, e:
+		print "pickling error:%s"%e, filename
+	finally:
+		pass
     except Exception, e:
         print "ioerror:%s"%e, filename
-    finally:
-       pass
-
+    else:
+	f.close()
+	return a	
 #read a slice from one dataset/file
 def readonep(paralist):
     x=[x.strip() for x in paralist.split(',')]
@@ -43,6 +49,7 @@ def readonep(paralist):
 	print "ioerror:%s"%e, x[0]
     finally:
        pass
+       #f.close()
 #def rangesplit(x):
 
 #read by conditions, val<10

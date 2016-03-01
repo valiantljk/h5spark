@@ -1,0 +1,25 @@
+# the csv that stores the hdf5 file path is at 
+  h5spark/python/tests/resources/hdf5/filelist
+# inside the csv file, i.e., 'filelist', example line is 
+# path-to-hdf5-file, dataset-name 
+ /global/cscratch1/sd/jialin/dayabay/preprocess/hdf/output-muo-large/100.h5 ,inputs 
+
+# export the h5spark loader module 
+
+ export PYTHONPATH=$PYTHONPATH:/global/homes/j/jialin/spark-io/h5spark/python/h5spark
+
+# export the spark event log location, so that you can history server after the run
+
+ export  EVENT_LOGS_DIR=$SCRATCH/spark/spark_event_logs
+
+
+# run the h5spark test app, in the folder h5spark/python
+
+ sbatch sparkbatch.sh
+
+# this batch job will run the file
+  h5spark/python/tests/read_test.py
+
+# run spark history server
+ module load spark/hist-server
+ run_history_server.sh $EVENT_LOGS_DIR

@@ -14,7 +14,9 @@ import read
 class h5pytestinspark(unittest.TestCase):
     def setUp(self):
         #self.csvfile='/global/homes/j/jialin/spark-io/h5spark/python/tests/resources/hdf5/file_names_and_paths.csv'
-	self.csvfile="/global/homes/j/jialin/spark-io/h5spark/python/tests/resources/hdf5/filelist"
+	#self.csvfile="/global/homes/j/jialin/spark-io/h5spark/python/tests/resources/hdf5/filelist"
+        self.csvfile=sys.argv[0]
+        print self.csvfile
         self.csvfiled='/global/homes/j/jialin/spark-io/h5spark/python/tests/resources/hdf5/file_names_and_pathsd.csv'
         self.partitions=1
         self.dname='autoencoded'
@@ -44,13 +46,16 @@ class h5pytestinspark(unittest.TestCase):
     def test_h5sparkReadmultiple(self):
         self.read=read.readmul
         self.file_paths = self.sc.textFile(self.csvfile, minPartitions=self.partitions)
+        print "The number of files is %i" % self.file_paths.count()
         self.rdd = self.file_paths.flatMap(self.read)
 #        self.msg="number of elements not equal"
 	#self.rdd.count()
         #self.assertEqual(200000, self.rdd.count(),self.msg)
         self.rdd.cache()
-	print "number of elements is" % self.rdd.count()
-#        m=self.rdd.collectAsMap()
+	print "The number of elements in this rdd is %i" % self.rdd.count()
+        print "The first element in this rdd has %i numbers" % len(self.rdd.first())
+        print self.rdd.first()
+	# m=self.rdd.collectAsMap()
 #        print m[1]
 #	self.msg="number of elements not equal %d" % self.rdd.count()
     # read 1 small hdf5 file by file name

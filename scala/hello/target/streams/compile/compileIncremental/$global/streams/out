@@ -1,0 +1,35 @@
+[0m[[0mdebug[0m] [0m[0m
+[0m[[0mdebug[0m] [0mInitial source changes: [0m
+[0m[[0mdebug[0m] [0m	removed:Set()[0m
+[0m[[0mdebug[0m] [0m	added: Set(/Users/jialin/Documents/h5spark/scala/hello/H5Ex_D_Hyperslab.java)[0m
+[0m[[0mdebug[0m] [0m	modified: Set()[0m
+[0m[[0mdebug[0m] [0mInvalidated products: Set()[0m
+[0m[[0mdebug[0m] [0mExternal API changes: API Changes: Set()[0m
+[0m[[0mdebug[0m] [0mModified binary dependencies: Set()[0m
+[0m[[0mdebug[0m] [0mInitial directly invalidated sources: Set(/Users/jialin/Documents/h5spark/scala/hello/H5Ex_D_Hyperslab.java)[0m
+[0m[[0mdebug[0m] [0m[0m
+[0m[[0mdebug[0m] [0mSources indirectly invalidated by:[0m
+[0m[[0mdebug[0m] [0m	product: Set()[0m
+[0m[[0mdebug[0m] [0m	binary dep: Set()[0m
+[0m[[0mdebug[0m] [0m	external source: Set()[0m
+[0m[[0mdebug[0m] [0mAll initially invalidated sources: Set(/Users/jialin/Documents/h5spark/scala/hello/H5Ex_D_Hyperslab.java)[0m
+[0m[[0mdebug[0m] [0mRecompiling all 1 sources: invalidated sources (1) exceeded 50.0% of all sources[0m
+[0m[[0minfo[0m] [0mCompiling 1 Java source to /Users/jialin/Documents/h5spark/scala/hello/target/scala-2.10/classes...[0m
+[0m[[0mdebug[0m] [0mAttempting to call com.sun.tools.javac.api.JavacTool@682f55ad directly...[0m
+[0m[[0mdebug[0m] [0mJava compilation took 0.84664772 s[0m
+[0m[[0mdebug[0m] [0mJava analysis took 0.170620405 s[0m
+[0m[[0mdebug[0m] [0mJava compile + analysis took 1.023906648 s[0m
+[0m[[0mdebug[0m] [0mInvalidating /Users/jialin/Documents/h5spark/scala/hello/H5Ex_D_Hyperslab.java...[0m
+[0m[[0mdebug[0m] [0mInvalidating (transitively) by inheritance from /Users/jialin/Documents/h5spark/scala/hello/H5Ex_D_Hyperslab.java...[0m
+[0m[[0mdebug[0m] [0mInitial set of included nodes: Set(/Users/jialin/Documents/h5spark/scala/hello/H5Ex_D_Hyperslab.java)[0m
+[0m[[0mdebug[0m] [0mInvalidated by transitive inheritance dependency: Set(/Users/jialin/Documents/h5spark/scala/hello/H5Ex_D_Hyperslab.java)[0m
+[0m[[0mdebug[0m] [0mThe /Users/jialin/Documents/h5spark/scala/hello/H5Ex_D_Hyperslab.java source file has the following regular definitions changed:[0m
+[0m[[0mdebug[0m] [0m	readHyperslab, DIM_X, notify, wait, equals, FILENAME, main, H5Ex_D_Hyperslab, RANK, notifyAll, <init>, toString, getClass, DIM_Y, writeHyperslab, DATASETNAME, hashCode.[0m
+[0m[[0mdebug[0m] [0mAll member reference dependencies will be considered within this context.[0m
+[0m[[0mdebug[0m] [0mName hashing optimization doesn't apply to non-Scala dependency: /Users/jialin/Documents/h5spark/scala/hello/H5Ex_D_Hyperslab.java[0m
+[0m[[0mdebug[0m] [0mNew invalidations:[0m
+[0m[[0mdebug[0m] [0m	Set()[0m
+[0m[[0mdebug[0m] [0mInitial set of included nodes: Set()[0m
+[0m[[0mdebug[0m] [0mPreviously invalidated, but (transitively) depend on new invalidations:[0m
+[0m[[0mdebug[0m] [0m	Set()[0m
+[0m[[0mdebug[0m] [0mAll newly invalidated sources after taking into account (previously) recompiled sources:Set()[0m

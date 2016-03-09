@@ -7,7 +7,7 @@ resolvers += "Unidata maven repository" at "http://artifacts.unidata.ucar.edu/co
 libraryDependencies ++= Seq(
    "org.hdfgroup" % "hdf-java" % "2.6.1",
    "org.scala-saddle" % "jhdf5" % "2.9",
-    "org.scala-saddle" % "saddle-hdf5_2.11" % "1.3.4",
-    "log4j" % "log4j" % "1.2.14",
+   "org.scala-saddle" % "saddle-hdf5_2.11" % "1.3.4",
+   "log4j" % "log4j" % "1.2.14",
     "org.apache.spark" %% "spark-core" % "1.6.0"
 )

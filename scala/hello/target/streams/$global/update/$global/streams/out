@@ -7,7 +7,7 @@
 [0m[[0mdebug[0m] [0m== resolving dependencies for default#hello_2.10;1.0 [compile][0m
 [0m[[0mdebug[0m] [0m== resolving dependencies default#hello_2.10;1.0->org.scala-lang#scala-library;2.10.5 [compile->default(compile)][0m
 [0m[[0minfo[0m] [0mResolving org.scala-lang#scala-library;2.10.5 ...[0m
-[0m[[0mdebug[0m] [0msbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@4994a483[0m
+[0m[[0mdebug[0m] [0msbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@31dfb2d9[0m
 [0m[[0mdebug[0m] [0msbt-chain: module revision found in cache: org.scala-lang#scala-library;2.10.5[0m
 [0m[[0mdebug[0m] [0m	found org.scala-lang#scala-library;2.10.5 in sbt-chain[0m
 [0m[[0mdebug[0m] [0m	[2.10.5] org.scala-lang#scala-library;2.10.5[0m
@@ -17365,7 +17365,7 @@
 [0m[[0mdebug[0m] [0m	[NOT REQUIRED] org.scala-lang#scala-reflect;2.10.5!scala-reflect.jar[0m
 [0m[[0mdebug[0m] [0m	[NOT REQUIRED] org.scala-lang#jline;2.10.5!jline.jar[0m
 [0m[[0mdebug[0m] [0m	[NOT REQUIRED] org.fusesource.jansi#jansi;1.4!jansi.jar[0m
-[0m[[0mdebug[0m] [0m:: resolution report :: resolve 4098ms :: artifacts dl 89ms[0m
+[0m[[0mdebug[0m] [0m:: resolution report :: resolve 4614ms :: artifacts dl 122ms[0m
 [0m[[0mdebug[0m] [0m	report for default#hello_2.10;1.0 compile produced in /Users/jialin/Documents/h5spark/scala/hello/target/resolution-cache/reports/default-hello_2.10-compile.xml[0m
 [0m[[0mdebug[0m] [0m	report for default#hello_2.10;1.0 runtime produced in /Users/jialin/Documents/h5spark/scala/hello/target/resolution-cache/reports/default-hello_2.10-runtime.xml[0m
 [0m[[0mdebug[0m] [0m	report for default#hello_2.10;1.0 test produced in /Users/jialin/Documents/h5spark/scala/hello/target/resolution-cache/reports/default-hello_2.10-test.xml[0m
@@ -17379,7 +17379,7 @@
 [0m[[0mdebug[0m] [0m	report for default#hello_2.10;1.0 docs produced in /Users/jialin/Documents/h5spark/scala/hello/target/resolution-cache/reports/default-hello_2.10-docs.xml[0m
 [0m[[0mdebug[0m] [0m	report for default#hello_2.10;1.0 pom produced in /Users/jialin/Documents/h5spark/scala/hello/target/resolution-cache/reports/default-hello_2.10-pom.xml[0m
 [0m[[0mdebug[0m] [0m	report for default#hello_2.10;1.0 scala-tool produced in /Users/jialin/Documents/h5spark/scala/hello/target/resolution-cache/reports/default-hello_2.10-scala-tool.xml[0m
-[0m[[0mdebug[0m] [0m	resolve done (4098ms resolve - 89ms download)[0m
+[0m[[0mdebug[0m] [0m	resolve done (4614ms resolve - 122ms download)[0m
 [0m[[0minfo[0m] [0mDone updating.[0m
 [0m[[33mwarn[0m] [0mScala version was updated by one of library dependencies:[0m
 [0m[[33mwarn[0m] [0m	* org.scala-lang:scala-library:(2.10.5, 2.10.4, 2.10.0, 2.9.2) -> 2.11.6[0m

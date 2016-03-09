@@ -7,7 +7,7 @@
 		revision="1.0"
 		conf="test"
 		confs="compile, runtime, test, provided, optional, compile-internal, runtime-internal, test-internal, plugin, sources, docs, pom, scala-tool"
-		date="20160308151741"/>
+		date="20160308224855"/>
 	<dependencies>
 		<module organisation="org.apache.spark" name="spark-core_2.10">
 			<revision name="1.6.0" status="release" pubdate="20151230025738" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://spark.apache.org/" downloaded="false" searched="false" default="false" conf="default, compile, runtime, default(compile), master" position="21">

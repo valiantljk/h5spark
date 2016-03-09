@@ -17,10 +17,10 @@ start-all.sh
 
 ####load multiple hdf5 files###
 
-spark-submit --master $SPARKURL --executor-cores 30 --driver-memory 120G --executor-memory 100G --class org.apache.spark.mllib.linalg.distributed.netCDFTest --conf spark.eventLog.enabled=true --conf spark.eventLog.dir=$SCRATCH/spark/spark_event_logs ./tests/read_tests-app.py /global/homes/j/jialin/spark-io/h5spark/python/tests/resources/hdf5/filelist40000 1 1000
+spark-submit --master $SPARKURL --executor-cores 30 --driver-memory 20G --executor-memory 80G  --conf spark.eventLog.enabled=true --conf spark.eventLog.dir=$SCRATCH/spark/spark_event_logs ./tests/read_tests-app.py /global/homes/j/jialin/spark-io/h5spark/python/tests/resources/hdf5/filelist40000 1 1000
 
 ###load single large hdf5 file####
-#spark-submit --master $SPARKURL --executor-cores 30 --driver-memory 120G --executor-memory 100G --class org.apache.spark.mllib.linalg.distributed.netCDFTest --conf spark.eventLog.enabled=true --conf spark.eventLog.dir=$SCRATCH/spark/spark_event_logs ./tests/read_tests-app.py /global/cscratch1/sd/jialin/dayabay/dayabay-slice.csv 1 500 /global/cscratch1/sd/jialin/dayabay/dayabay-final.h5 autoencoded 2759895880 
+#spark-submit --master $SPARKURL --executor-cores 30 --driver-memory 20G --executor-memory 100G --class org.apache.spark.mllib.linalg.distributed.netCDFTest --conf spark.eventLog.enabled=true --conf spark.eventLog.dir=$SCRATCH/spark/spark_event_logs ./tests/read_tests-app.py /global/cscratch1/sd/jialin/dayabay/dayabay-slice.csv 1 500 /global/cscratch1/sd/jialin/dayabay/dayabay-final.h5 autoencoded 2759895880 
 
 # 2759895880 is the total number of rows in the 2d array, the number of columns is 11(reduced from 192)
 ###check history server information####

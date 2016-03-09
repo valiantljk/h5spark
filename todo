@@ -2,3 +2,32 @@ Jan 5 2016
 1. install parallel h5py inside anaconda on mac
 2. install parallel hdf5 on mac
 3. on cori, test mpi inside spark, by initializing spark first then init mpi, or spawn child processes
+
+
+
+Mar 2 2016
+    #to do list:
+	#check file size,
+        # if small, sequential read
+        # if large, parallel read
+        # on default, sequential read
+
+
+# def __init__(self,filename,datasetname, cooridnates, conditions):
+#     self.fname=filename
+#     self.dname=datasetname
+#     self.cord=cooridnates
+#     self.cond=conditions
+#read by coordinates, e.g., start:end=0:100
+
+#read data by given parameters: x[0]file name,x[1]dataset name
+
+
+       #f.close()
+#def rangesplit(x):
+
+#read by conditions, val<10
+#def readbycond(self):
+#    f=h5py.File(self.fname,'r')
+#    d=f[self.dname]
+#    return list(d[:])

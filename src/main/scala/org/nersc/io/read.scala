@@ -19,10 +19,10 @@ import org.slf4j.LoggerFactory
 
 import ncsa.hdf.`object`.Dataset
 import ncsa.hdf.`object`.HObject
-
+import org.apache.spark.{SparkContext,SparkConf}
+import org.apache.spark.SparkContext._
 
 object read {
-
 
   /**
    * Gets an NDimensional array of from a hdf
@@ -31,7 +31,11 @@ object read {
    * @return
    */
 
-  def readone(FILENAME:String, DATASETNAME:String): (Array[Array[Float]])= {
+  //def readone(FILENAME:String, DATASETNAME:String): (Array[Array[Float]])= {
+    def readone(x:String): (Array[Array[Float]])= {
+    val para =x.split(",")
+    val FILENAME=para{0}
+    val DATASETNAME=para{1}
     var DIM_X: Int = 4
     var DIM_Y: Int = 3
     var RANK: Int = 2
@@ -62,12 +66,29 @@ object read {
    
     dset_data
   }
+
+
   def main(args: Array[String]): Unit = {
     var Filename="1.h5"
-    var Datasetname="test"
-    
+    var Datasetname="test" 
     var dset = Array.ofDim[Float](4, 3)
-    dset=read.readone(Filename, Datasetname)
+    //dset=read.readone(Filename, Datasetname)
+    //println(dset.deep.mkString("\n"))
+   
+    val masterURL = if (args.length <= 1) "local[2]" else args(1)
+    val partitions = if (args.length <= 2) 2 else args(2).toInt
+    val dimension = if (args.length <= 3) (4, 3) else (args(3).toInt, args(3).toInt)
+    val variable = if (args.length <= 4) "test" else args(4)
+    val hdfspath = if (args.length <= 5) "resources/hdf5/1.h5" else args(5)
+    val csvfile = if(args.length <= 6) "resources/hdf5/scalafilelist" else args(6)
+
+
+    val sparkConf = new SparkConf().setAppName("h5spark").setMaster(masterURL)
+    val sc =new SparkContext(sparkConf)
+    val file_path =  sc.textFile(csvfile,minPartitions=partitions)
+
+    val dsetrdd =file_path.flatMap(read.readone)
+    dsetrdd.cache()
     println(dset.deep.mkString("\n"))
   }
 

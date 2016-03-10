@@ -32,14 +32,14 @@ object read {
    */
 
 
-  def readone(FILENAME:String, DATASETNAME:String): (ARRAY[Float])= {
+  def readone(FILENAME:String, DATASETNAME:String): (Array[Array[Float]])= {
     var DIM_X: Int = 6
     var DIM_Y: Int = 8
     var RANK: Int = 2
     val logger = LoggerFactory.getLogger(getClass)
     var file_id = -1
     var dataset_id = -1
-    var dset_data = Array.ofDim[Int](DIM_X, DIM_Y)
+    var dset_data = Array.ofDim[Float](DIM_X, DIM_Y)
 
     //Open an existing file.
     file_id = H5.H5Fopen(FILENAME, HDF5Constants.H5F_ACC_RDONLY, HDF5Constants.H5P_DEFAULT)

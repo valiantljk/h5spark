@@ -3,7 +3,7 @@ hdf5 reader in scala
 */
 /************************************************************
   This example shows how to read and write data to a
-  dataset by hyberslabs.  The program first writes integers
+  dataset by filename/datasetname.  The program first writes integers
   in a hyperslab selection to a dataset with dataspace
   dimensions of DIM_XxDIM_Y, then closes the file.  Next, it
   reopens the file, reads back the data, and outputs it to
@@ -13,14 +13,13 @@ hdf5 reader in scala
  ************************************************************/
 package org.nersc.io
 
-import ncsa.hdf.hdf5lib.H5
-import ncsa.hdf.hdf5lib.HDF5Constants
+import ncsa.hdf.hdf5lib.{H5,HDF5Constants}
+
 import org.slf4j.LoggerFactory
 
-import ncsa.hdf.`object`.Dataset
-import ncsa.hdf.`object`.HObject
-import org.apache.spark.{SparkContext,SparkConf}
-import org.apache.spark.SparkContext._
+import ncsa.hdf.`object`.{Dataset,HObject}
+
+import org.apache.spark.{SparkContext,SparkConf,SparkContext._}
 
 object read {
 
@@ -89,6 +88,7 @@ object read {
 
     val dsetrdd =file_path.flatMap(read.readone)
     dsetrdd.cache()
+    dsetrdd.count()
     println(dset.deep.mkString("\n"))
   }
 

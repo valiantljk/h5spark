@@ -65,6 +65,7 @@ object read {
   def main(args: Array[String]): Unit = {
     var Filename="1.h5"
     var Datasetname="test"
+    
     var dset = Array.ofDim[Float](4, 3)
     dset=read.readone(Filename, Datasetname)
     println(dset.deep.mkString("\n"))

@@ -1,0 +1,28 @@
+[0m[[0mdebug[0m] [0m[0m
+[0m[[0mdebug[0m] [0mInitial source changes: [0m
+[0m[[0mdebug[0m] [0m	removed:Set()[0m
+[0m[[0mdebug[0m] [0m	added: Set()[0m
+[0m[[0mdebug[0m] [0m	modified: Set(/global/u1/j/jialin/spark-io/h5spark/src/main/scala/org/nersc/io/write.java)[0m
+[0m[[0mdebug[0m] [0mInvalidated products: Set()[0m
+[0m[[0mdebug[0m] [0mExternal API changes: API Changes: Set()[0m
+[0m[[0mdebug[0m] [0mModified binary dependencies: Set()[0m
+[0m[[0mdebug[0m] [0mInitial directly invalidated sources: Set(/global/u1/j/jialin/spark-io/h5spark/src/main/scala/org/nersc/io/write.java)[0m
+[0m[[0mdebug[0m] [0m[0m
+[0m[[0mdebug[0m] [0mSources indirectly invalidated by:[0m
+[0m[[0mdebug[0m] [0m	product: Set()[0m
+[0m[[0mdebug[0m] [0m	binary dep: Set()[0m
+[0m[[0mdebug[0m] [0m	external source: Set()[0m
+[0m[[0mdebug[0m] [0mAll initially invalidated sources: Set(/global/u1/j/jialin/spark-io/h5spark/src/main/scala/org/nersc/io/write.java)[0m
+[0m[[0minfo[0m] [0mCompiling 1 Java source to /global/u1/j/jialin/spark-io/h5spark/target/scala-2.10/classes...[0m
+[0m[[0mdebug[0m] [0mAttempting to call com.sun.tools.javac.api.JavacTool@212b6986 directly...[0m
+[0m[[0minfo[0m] [0m/global/u1/j/jialin/spark-io/h5spark/src/main/scala/org/nersc/io/write.java: /global/u1/j/jialin/spark-io/h5spark/src/main/scala/org/nersc/io/write.java uses or overrides a deprecated API.[0m
+[0m[[0minfo[0m] [0m/global/u1/j/jialin/spark-io/h5spark/src/main/scala/org/nersc/io/write.java: Recompile with -Xlint:deprecation for details.[0m
+[0m[[0mdebug[0m] [0mJava compilation took 0.486996816 s[0m
+[0m[[0mdebug[0m] [0mJava analysis took 0.050763984 s[0m
+[0m[[0mdebug[0m] [0mJava compile + analysis took 0.54659837 s[0m
+[0m[[0mdebug[0m] [0mNew invalidations:[0m
+[0m[[0mdebug[0m] [0m	Set()[0m
+[0m[[0mdebug[0m] [0mInitial set of included nodes: Set()[0m
+[0m[[0mdebug[0m] [0mPreviously invalidated, but (transitively) depend on new invalidations:[0m
+[0m[[0mdebug[0m] [0m	Set()[0m
+[0m[[0mdebug[0m] [0mAll newly invalidated sources after taking into account (previously) recompiled sources:Set()[0m

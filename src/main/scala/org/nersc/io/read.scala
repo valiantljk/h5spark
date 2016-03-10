@@ -31,10 +31,9 @@ object read {
    * @return
    */
 
-
   def readone(FILENAME:String, DATASETNAME:String): (Array[Array[Float]])= {
-    var DIM_X: Int = 6
-    var DIM_Y: Int = 8
+    var DIM_X: Int = 4
+    var DIM_Y: Int = 3
     var RANK: Int = 2
     val logger = LoggerFactory.getLogger(getClass)
     var file_id = -1
@@ -51,21 +50,24 @@ object read {
     //var dset =(Dataset) H5File(file_id)
 
     // Read the data using the default properties.
-    try {
-      if (dataset_id >= 0)
-        H5.H5Dread(dataset_id, HDF5Constants.H5T_NATIVE_INT,
+    var dread_id = -1
+    if (dataset_id >= 0){
+       dread_id = H5.H5Dread(dataset_id, HDF5Constants.H5T_NATIVE_FLOAT,
           HDF5Constants.H5S_ALL, HDF5Constants.H5S_ALL,
           HDF5Constants.H5P_DEFAULT, dset_data)
     }
-    catch {
-      case e => {
-        e.printStackTrace()
-        logger.info("dataset open error" + FILENAME)
-      }
-    }
-
+    if(dread_id<0)
+     logger.info("dataset open error" + FILENAME)
+    //println(dset_data.deep.mkString("\n")) 
+   
     dset_data
   }
-
+  def main(args: Array[String]): Unit = {
+    var Filename="1.h5"
+    var Datasetname="test"
+    var dset = Array.ofDim[Float](4, 3)
+    dset=read.readone(Filename, Datasetname)
+    println(dset.deep.mkString("\n"))
+  }
 
 }

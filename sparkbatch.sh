@@ -16,8 +16,9 @@ start-collectl.sh
 start-all.sh
 
 ####load multiple hdf5 files###
+export PYTHONPATH=$PYTHONPATH:src/main/python/h5spark
 
-spark-submit --master $SPARKURL --executor-cores 20 --driver-memory 20G --executor-memory 80G  --conf spark.eventLog.enabled=true --conf spark.eventLog.dir=$SCRATCH/spark/spark_event_logs ./tests/read_tests-app.py ./resources/hdf5/filelist40000 1 100
+spark-submit --master $SPARKURL --executor-cores 20 --driver-memory 20G --executor-memory 80G  --conf spark.eventLog.enabled=true --conf spark.eventLog.dir=$SCRATCH/spark/spark_event_logs src/main/python/tests/read_tests-app.py src/main/resources/hdf5/filelist40000 1 100
 
 ###load single large hdf5 file####
 #spark-submit --master $SPARKURL --executor-cores 30 --driver-memory 20G --executor-memory 100G --class org.apache.spark.mllib.linalg.distributed.netCDFTest --conf spark.eventLog.enabled=true --conf spark.eventLog.dir=$SCRATCH/spark/spark_event_logs ./tests/read_tests-app.py /global/cscratch1/sd/jialin/dayabay/dayabay-slice.csv 1 500 /global/cscratch1/sd/jialin/dayabay/dayabay-final.h5 autoencoded 2759895880 

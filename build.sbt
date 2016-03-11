@@ -10,8 +10,8 @@ scalaVersion := "2.10.5"
 
 resolvers += "Unidata maven repository" at "http://artifacts.unidata.ucar.edu/content/repositories/unidata-releases"
 
-//mainClass in (Compile,run) := Some("org.nersc.io.read")
-mainClass in (Compile,run) := Some("org.nersc.io.write")
+mainClass in (Compile,run) := Some("org.nersc.io.read")
+//mainClass in (Compile,run) := Some("org.nersc.io.write")
 libraryDependencies ++= Seq(
     "org.apache.spark" %% "spark-core" % "1.3.1" % "provided",
   "org.apache.spark" %% "spark-mllib" % "1.3.1" % "provided"

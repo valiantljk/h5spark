@@ -9,6 +9,7 @@ import read
 def test_h5sparkReadmultiple():
     if(len(sys.argv)!=4):
       print "arguments: csv_file_path number_partitions_csv number_partitions_hdf5"
+      print len(sys.argv)
       sys.exit(1)
     csvfile=sys.argv[1]
     print "input csv file:",csvfile

@@ -21,3 +21,9 @@ h5spark versus other io api
 1. h5spark vs mpiio
 2. h5spark vs h5py
 3. h5spark vs scispark
+
+h5spark hands on programming issues
+0. scala string trim spaces
+1. sbt memory issue 
+2. executor memory issue
+3. dset_dims long to int 

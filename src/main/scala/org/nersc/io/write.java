@@ -68,8 +68,7 @@ public class write {
      */
     private static void createFile() throws Exception {
         // retrieve an instance of H5File
-        FileFormat fileFormat = FileFormat
-                .getFileFormat(FileFormat.FILE_TYPE_HDF5);
+        FileFormat fileFormat = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
 
         if (fileFormat == null) {
             System.err.println("Cannot find HDF5 FileFormat.");

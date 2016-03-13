@@ -1,7 +1,7 @@
 import os,sys
 import h5py,csv
 from pyspark import SparkContext
-lib_path=os.path.abspath(os.path.join('..','tests','h5spark'))
+lib_path=os.path.abspath(os.path.join('..','h5spark'))
 sys.path.append(lib_path)
 import read
 

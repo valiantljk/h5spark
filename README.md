@@ -7,8 +7,6 @@
 2. For reading single file, Input is "A csv file that lists file path, variable name, and start, offset", e.g., src/resources/hdf5/
 3. Output is "A single RDD in which the element of RDD is one row in original file"
 
-#Run python version on Cori
-sbatch spark-python.sh
-
-#Run scala version on Cori
-sbatch spark-scala.sh
+#Run on Cori
+1. Python version: sbatch spark-python.sh
+2. Scala version: sbatch spark-scala.sh

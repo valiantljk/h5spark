@@ -1,12 +1,14 @@
 import os,sys
 import h5py,csv
 from pyspark import SparkContext
-lib_path=os.path.abspath(os.path.join('..','h5spark'))
-sys.path.append(lib_path)
+#lib_path=os.path.abspath(os.path.join('.','src/main/python/h5spark'))
+#sys.path.append(lib_path)
 import read
 
 # read multiple hdf5 files
 def test_h5sparkReadmultiple():
+    #import read
+    #print lib_path
     if(len(sys.argv)!=4):
       print "arguments: csv_file_path number_partitions_csv number_partitions_hdf5"
       print len(sys.argv)

@@ -3,7 +3,7 @@
 
 #SBATCH -p debug
 #SBATCH -N 5
-#SBATCH -t 00:30:00
+#SBATCH -t 00:10:00
 #SBATCH -e mysparkjob_%j.err
 #SBATCH -o mysparkjob_%j.out
 #SBATCH --ccm
@@ -18,7 +18,7 @@ start-all.sh
 ####load multiple hdf5 files###
 export PYTHONPATH=$PYTHONPATH:src/main/python/h5spark
 
-spark-submit --master $SPARKURL --executor-cores 20 --driver-memory 20G --executor-memory 80G  --conf spark.eventLog.enabled=true --conf spark.eventLog.dir=$SCRATCH/spark/spark_event_logs src/main/python/tests/multi-file-test.py src/resources/hdf5/python-filelist-40k 1 100
+spark-submit --master $SPARKURL --executor-cores 20 --driver-memory 20G --executor-memory 80G  --conf spark.eventLog.enabled=true --conf spark.eventLog.dir=$SCRATCH/spark/spark_event_logs --py-files src/main/python/h5spark/read.py src/main/python/tests/multi-file-test.py  src/resources/hdf5/python-filelist-40k 1 100 
 
 ###load single large hdf5 file####
 #spark-submit --master $SPARKURL --executor-cores 30 --driver-memory 20G --executor-memory 80G --conf spark.eventLog.enabled=true --conf spark.eventLog.dir=$SCRATCH/spark/spark_event_logs src/main/python/tests/single-file-test.py src/resources/hdf5/dayabay-slice.csv 1 500 /global/cscratch1/sd/jialin/dayabay/dayabay-final.h5 autoencoded 2759895880 

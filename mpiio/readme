@@ -1,0 +1,5 @@
+
+module load cray-hdf5-parallel
+cc -o h5read h5read.c
+
+sbatch submit.sh

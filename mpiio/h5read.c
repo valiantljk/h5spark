@@ -55,7 +55,7 @@ int main(int argc, char **argv){
   fapl = H5Pcreate(H5P_FILE_ACCESS);
   H5Pset_fapl_mpio(fapl, comm, info);
   file= H5Fopen(filename, H5F_ACC_RDONLY, fapl);
-  H5Sclose(fapl);
+  H5Pclose(fapl);
   if(file<0 && mpi_rank==0) {printf("File %s open error\n",filename); return 0;}
   dataset= H5Dopen(file, DATASETNAME,H5P_DEFAULT);
   if(dataset <0 && mpi_rank==0) {printf("Data %s open error\n",DATASETNAME); return 0;}
@@ -76,7 +76,7 @@ int main(int argc, char **argv){
   order     = H5Tget_order(datatype);
   if (order == H5T_ORDER_LE && mpi_rank==0) printf("Little endian order \n");
   size  = H5Tget_size(datatype);
-  if(mpi_rank==0) printf(" Data size is %d \n", size);
+  if(mpi_rank==0) printf("Data size is %d \n", size);
   dataspace = H5Dget_space(dataset);    /* dataspace handle */
   rank      = H5Sget_simple_extent_ndims(dataspace);
   //if(rank!=NDIMS && mpi_rank==0) {printf("Dimension of dataset is not correct\n"); return 0;}
@@ -84,7 +84,7 @@ int main(int argc, char **argv){
   status_n  = H5Sget_simple_extent_dims(dataspace, dims_out, NULL);
   if(mpi_rank==0){
    for(i=0;i<rank;i++)
-   printf("dimensions %d: %lu\n", i, (unsigned long)(dims_out[i]));
+   printf("Dimensions %d: %lu\n", i, (unsigned long)(dims_out[i]));
   }
  
   hsize_t offset[rank];
@@ -121,15 +121,17 @@ int main(int argc, char **argv){
   float totalsizegb=mpi_size * rankmemsize / 1024.0 / 1024.0 / 1024.0;
   //alloc buffer for each rank
   void * data_t=NULL;
-  if(class == H5T_FLOAT)
-    data_t = (void *)malloc( rankmemsize * sizeof(float));
+  if(class == H5T_FLOAT){
+     if(size==4) data_t = (void *)malloc( rankmemsize * sizeof(float));
+     else if(size==8) data_t = (void *)malloc( rankmemsize * sizeof(double));
+  }
   else if(class == H5T_INTEGER)
     data_t = (void *)malloc( rankmemsize * sizeof(int)); 
 
   if(data_t == NULL){
     printf("Memory allocation fails mpi_rank = %d",mpi_rank);
     for (i=0; i< rank; i++){
-    printf("dim %d: %d, ",i,count[i]);
+    printf("Dim %d: %d, ",i,count[i]);
     }
     exit(1);
     return -1;
@@ -138,9 +140,9 @@ int main(int argc, char **argv){
   double t0 = MPI_Wtime();  
   if(mpi_rank == 0){
     if(col==1)
-    printf("Collective Read data ... \n");
+    printf("IO: Collective Read\n");
     else 
-    printf("Independent Read data ... \n");
+    printf("IO: Independent Read\n");
   }
   if(col==1){
    hid_t plist;
@@ -148,19 +150,29 @@ int main(int argc, char **argv){
    H5Pset_dxpl_mpio(plist, H5FD_MPIO_COLLECTIVE);
    if(class == H5T_INTEGER)
     H5Dread(dataset, H5T_NATIVE_INT, memspace,dataspace, plist, data_t);
-   else if(class == H5T_FLOAT)
-    H5Dread(dataset, H5T_NATIVE_FLOAT, memspace,dataspace, plist, data_t);
+   else if(class == H5T_FLOAT){
+    if(size==4) H5Dread(dataset, H5T_NATIVE_FLOAT, memspace,dataspace, plist, data_t);
+    else if(size==8) H5Dread(dataset, H5T_NATIVE_DOUBLE, memspace,dataspace, plist, data_t);
+   }
    H5Pclose(plist);
   }
   else{
     if(class == H5T_INTEGER)
      H5Dread(dataset, H5T_NATIVE_INT, memspace,dataspace, H5P_DEFAULT, data_t);
-    else if(class == H5T_FLOAT)
-     H5Dread(dataset, H5T_NATIVE_FLOAT, memspace, dataspace, H5P_DEFAULT, data_t);
+    else if(class == H5T_FLOAT){
+     if(size==4) H5Dread(dataset, H5T_NATIVE_FLOAT, memspace, dataspace, H5P_DEFAULT, data_t);
+     else if(size==8) H5Dread(dataset, H5T_NATIVE_DOUBLE, memspace, dataspace, H5P_DEFAULT, data_t);
+    }
   }
   double t1 = MPI_Wtime()-t0;
-  if(mpi_rank==0 ||mpi_rank==mpi_size-1)
-   printf("rank %d, read time %.2fs\n",mpi_rank,t1);
+  if(mpi_rank==0 ||mpi_rank==mpi_size-1){
+  
+   printf("\nRank %d, read time %.2fs\n",mpi_rank,t1);
+   for(i=0; i<rank; i++){
+    printf("Start_%d:%d Count_%d:%d\n",i,offset[i],i,count[i]);
+   }
+   printf("\n");
+  }
   if(data_t!=NULL)
    free(data_t);
   H5Tclose(datatype);

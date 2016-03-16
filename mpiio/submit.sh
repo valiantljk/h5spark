@@ -8,4 +8,4 @@
 #SBATCH -V
 
 #input args: f: inputfilename, b: collective_buffersize, n: collective_buffernodes, k:iscollective, d:numberDIMs, v:datasetname
-srun -n 10 ./h5read -f 1.h5 -b 16777216 -n 2 -k 1 -d 2 -v inputs 
+srun -n 10 ./h5read -f 1.h5 -b 16777216 -n 2 -k 1  -v inputs 

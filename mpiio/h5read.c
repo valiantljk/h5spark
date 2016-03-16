@@ -24,8 +24,8 @@ int main(int argc, char **argv){
   strncpy(cb_buffer_size,"16777216", NAME_MAX);
   strncpy(cb_nodes, "16", NAME_MAX);
   int col=1;//collective write
-  //input args: f: inputfilename, b: collective_buffersize, n: collective_buffernodes, k:iscollective, d:numberDIMs, v:datasetname   
-  while ((c = getopt (argc, argv, "f:b:n:k:d:v:")) != -1)
+  //input args: f: inputfilename, b: collective_buffersize, n: collective_buffernodes, k:iscollective, v:datasetname   
+  while ((c = getopt (argc, argv, "f:b:n:k:v:")) != -1)
     switch (c)
       {
       case 'f':
@@ -39,8 +39,6 @@ int main(int argc, char **argv){
 	break;
       case 'k':
 	col = strtol(optarg, NULL, 10);
-      case 'd':
-        NDIMS = strtol(optarg, NULL, 10);
       case 'v':
 	strncpy(DATASETNAME, optarg, NAME_MAX);
       default:
@@ -54,6 +52,7 @@ int main(int argc, char **argv){
 
   //Open file/dataset
   hid_t fapl,file,dataset;
+  fapl = H5Pcreate(H5P_FILE_ACCESS);
   H5Pset_fapl_mpio(fapl, comm, info);
   file= H5Fopen(filename, H5F_ACC_RDONLY, fapl);
   H5Sclose(fapl);
@@ -66,21 +65,22 @@ int main(int argc, char **argv){
   H5T_class_t class;                 /* data type class */
   H5T_order_t order;                 /* data order */
   size_t      size;                  /* size of data*/    
-  hsize_t     dims_out[NDIMS];           /* dataset dimensions */ 
+  //hsize_t     dims_out[NDIMS];           /* dataset dimensions */ 
   int i, status_n,rank;
   /* Get datatype and dataspace handles and then query
        dataset class, order, size, rank and dimensions  */
   datatype  = H5Dget_type(dataset);     /* datatype handle */ 
   class     = H5Tget_class(datatype);
   if (class == H5T_INTEGER && mpi_rank==0) printf("Data set has INTEGER type \n");
-  if (class == H5T_FLOAT && mpi_rank==0) printf("Data set has Float type");
+  if (class == H5T_FLOAT && mpi_rank==0) printf("Data set has Float type \n");
   order     = H5Tget_order(datatype);
   if (order == H5T_ORDER_LE && mpi_rank==0) printf("Little endian order \n");
   size  = H5Tget_size(datatype);
   if(mpi_rank==0) printf(" Data size is %d \n", size);
   dataspace = H5Dget_space(dataset);    /* dataspace handle */
   rank      = H5Sget_simple_extent_ndims(dataspace);
-  if(rank!=NDIMS && mpi_rank==0) {printf("Dimension of dataset is not correct\n"); return 0;}
+  //if(rank!=NDIMS && mpi_rank==0) {printf("Dimension of dataset is not correct\n"); return 0;}
+  hsize_t     dims_out[rank];
   status_n  = H5Sget_simple_extent_dims(dataspace, dims_out, NULL);
   if(mpi_rank==0){
    for(i=0;i<rank;i++)
@@ -109,22 +109,22 @@ int main(int argc, char **argv){
   //specify the selection in the dataspace for each rank
   H5Sselect_hyperslab(dataspace, H5S_SELECT_SET, offset, NULL, count, NULL);
 
-  hsize_t memspace_size[rank]; 
-  hsize_t memsize=1;
+  hsize_t rankmemsize=1;
   hid_t memspace;
   for(i=0; i<rank; i++){  
-   memsize*=count[i];
-   memspace_size[i]=count[i];
+   rankmemsize*=count[i];
   }
 
-  memspace = H5Screate_simple(rank, memspace_size, NULL);
-  float totalsizegb=memsize / 1024.0 / 1024.0 / 1024.0;
+  //memspace = H5Screate_simple(rank, dims_out, NULL);
+  //H5Sselect_hyperslab(memspace,H5S_SELECT_SET,offset,NULL,count,NULL);
+  memspace = H5Screate_simple(rank,count,NULL);
+  float totalsizegb=mpi_size * rankmemsize / 1024.0 / 1024.0 / 1024.0;
   //alloc buffer for each rank
   void * data_t=NULL;
   if(class == H5T_FLOAT)
-    data_t = (void *)malloc( memsize * sizeof(float));
+    data_t = (void *)malloc( rankmemsize * sizeof(float));
   else if(class == H5T_INTEGER)
-    data_t = (void *)malloc( memsize * sizeof(int)); 
+    data_t = (void *)malloc( rankmemsize * sizeof(int)); 
 
   if(data_t == NULL){
     printf("Memory allocation fails mpi_rank = %d",mpi_rank);
@@ -159,10 +159,11 @@ int main(int argc, char **argv){
      H5Dread(dataset, H5T_NATIVE_FLOAT, memspace, dataspace, H5P_DEFAULT, data_t);
   }
   double t1 = MPI_Wtime()-t0;
-  if(mpi_rank==0)
-   printf("rank %d,write time %.2fs\n",mpi_rank,t1);
+  if(mpi_rank==0 ||mpi_rank==mpi_size-1)
+   printf("rank %d, read time %.2fs\n",mpi_rank,t1);
   if(data_t!=NULL)
    free(data_t);
+  H5Tclose(datatype);
   H5Sclose(dataspace);
   H5Sclose(memspace);
   H5Dclose(dataset);

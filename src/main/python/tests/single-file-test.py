@@ -7,8 +7,9 @@ import read
 
 #read single large hdf5 file
 def test_h5sparkReadsingle():
-    if(len(sys.argv)!=7):
+    if(len(sys.argv)!=6):
          print "arguments: csv_file_path number_partitions_csv number_partitions_hdf5 input_file_path dataset maxdim"
+	 print len(sys.argv)
          sys.exit(1)
     csvfile=sys.argv[1]
     print "input csv file:",csvfile

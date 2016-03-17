@@ -56,7 +56,15 @@ int main(int argc, char **argv){
   H5Pset_fapl_mpio(fapl, comm, info);
   file= H5Fopen(filename, H5F_ACC_RDONLY, fapl);
   H5Pclose(fapl);
-  if(file<0 && mpi_rank==0) {printf("File %s open error\n",filename); return 0;}
+  if(mpi_rank==0) {
+	if(file<0){
+	  printf("File %s open error\n",filename); 
+	  return 0;
+	}
+	else {
+	  printf("File %s open ok\n",filename);
+	}
+  }
   dataset= H5Dopen(file, DATASETNAME,H5P_DEFAULT);
   if(dataset <0 && mpi_rank==0) {printf("Data %s open error\n",DATASETNAME); return 0;}
   

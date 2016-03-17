@@ -15,7 +15,7 @@ def test_multi_2(sc,path_to_repo):
     resource_dir = 'src/resources/hdf5/'
     path = os.path.join(path_to_repo, resource_dir)
     h5_list = [(path + '/test_mat2.h5', 'data'),(path + '/test_mat3.h5', 'data') ]
-    h5_list_file = 'file_names_and_pathsd.csv'
+    #h5_list_file = 'file_names_and_pathsd.csv'
     h5_tuple = (path + '/test_mat2.h5', 'data')
     rdd = read.readH5(sc, h5_list)
     print rdd.take(1)
@@ -29,14 +29,14 @@ def test_multi_2(sc,path_to_repo):
     
     
     
-    
-
+def testmultihdf5(sc,path_to_repo):
+    rdd = read.readH5(sc,path_to_repo)    
 
 # In[ ]:
 
 if __name__ == '__main__':
     sc=SparkContext(appName="h5sparkread")
     path_to_repo = sys.argv[1]
-    test_multi_2(sc,path_to_repo)
-    
+    #test_multi_2(sc,path_to_repo)
+    testmultihdf5(sc,path_to_repo)
 

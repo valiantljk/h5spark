@@ -11,12 +11,13 @@
 1. Python version: sbatch spark-python.sh
 2. Scala version: sbatch spark-scala.sh
 
-#To use in your pyspark scripts:
-add this to your python path:
+#To Use in Your Pyspark Scripts:
+Add this to your python path:
+
 export PYTHONPATH= path/to/h5spark/src/main/python/:$PYTHONPATH
 
-then import it in python like so:
-from h5spark import read
-from pyspark import SparkContext
-sc = SparkContext()
-rdd = read.readH5(sc,('path/to/h5file', 'dataset_name'))
+Then import it in python like so:
+1. from h5spark import read
+2. from pyspark import SparkContext
+3. sc = SparkContext()
+4. rdd = read.readH5(sc,('path/to/h5file', 'dataset_name'))

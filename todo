@@ -1,3 +1,10 @@
+Mar 18 2016
+
+HDF5 1.10 released, 
+JNI can be compiled, but how can I use MPI to parse the non-mpi hdf5 calls. 
+
+https://www.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.0-pre1/src/hdf5-1.10.0-pre1-RELEASE.txt
+
 Jan 5 2016
 1. install parallel h5py inside anaconda on mac
 2. install parallel hdf5 on mac

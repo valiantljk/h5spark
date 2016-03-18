@@ -26,8 +26,10 @@ def test_h5sparkReadsingle():
     print "The number of partitions in file_paths %d"% file_paths.getNumPartitions()
     refile_paths=file_paths.repartition(hdfpartitions)
     print "Afte repartition: The number of partitions in file_paths %d"% refile_paths.getNumPartitions()
+    ##count startup time
+
     rdd = refile_paths.flatMap(read.readonep)
-    rdd.cache()
+    #rdd.cache()
     print "1st time count: The number of elements in this rdd is %i" % rdd.count()
     print "2nd time count: The number of elements in this rdd is %i" % rdd.count()
     sc.stop()

@@ -4,3 +4,4 @@ mysparkjob_*
 *.err
 *.out
 *.swp
+*.pyc

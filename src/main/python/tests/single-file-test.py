@@ -1,13 +1,11 @@
 import os,sys
 import h5py,csv
 from pyspark import SparkContext
-lib_path=os.path.abspath(os.path.join('..','tests','h5spark'))
-sys.path.append(lib_path)
 import read
 
 #read single large hdf5 file
 def test_h5sparkReadsingle():
-    if(len(sys.argv)!=6):
+    if(len(sys.argv)!=7):
          print "arguments: csv_file_path number_partitions_csv number_partitions_hdf5 input_file_path dataset maxdim"
 	 print len(sys.argv)
          sys.exit(1)
@@ -18,7 +16,10 @@ def test_h5sparkReadsingle():
     input_file=sys.argv[4]
     dataset=sys.argv[5]
     maxdim=int(sys.argv[6])
-    generate_csv(input_file,dataset,maxdim,csvfile,hdfpartitions)
+    print "input_file_path",input_file
+    print "dataset",dataset
+    print "maxdim", maxdim
+    #generate_csv(input_file,dataset,csvfile, maxdim,hdfpartitions)
     sc=SparkContext(appName="h5sparkread")
     file_paths = sc.textFile(csvfile, minPartitions=partitions)
     print "The number of files is %i" % file_paths.count()

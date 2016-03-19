@@ -2,8 +2,8 @@
 
 
 #SBATCH -p debug
-#SBATCH -N 5 
-#SBATCH -t 00:5:00
+#SBATCH -N 100 
+#SBATCH -t 00:30:00
 #SBATCH -e mysparkjob_%j.err
 #SBATCH -o mysparkjob_%j.out
 #SBATCH --ccm
@@ -21,20 +21,20 @@ export PYTHONPATH=$PYTHONPATH:$PWD/src/main/python/h5spark
 
 ###load single large hdf5 file####
 partition="1"
-repartition="1000"
+repartition="6000"
 
-#inputfile="/global/cscratch1/sd/gittens/CFSROhdf5/oceanTemps.hdf5"
-#dataset="temperatures"
-#rows="6349676"
-#type="64"
-#csvlist="src/resources/hdf5/oceanlist.csv"
+inputfile="/global/cscratch1/sd/gittens/CFSROhdf5/oceanTemps.hdf5"
+dataset="temperatures"
+rows="6349676"
+type="64"
+csvlist="src/resources/hdf5/oceanlist.csv"
 
 #inputfile="/global/cscratch1/sd/jialin/dayabay/ost1/dayabay-final.h5"
-inputfile="/global/cscratch1/sd/jialin/dayabay/dayabay-final.h5"
-dataset="autoencoded"
-rows="2759895880"
-type="32"
-csvlist="src/resources/hdf5/dayabay-slice.csv"
+#inputfile="/global/cscratch1/sd/jialin/dayabay/dayabay-final.h5"
+#dataset="autoencoded"
+#rows="2759895880"
+#type="32"
+#csvlist="src/resources/hdf5/dayabay-slice.csv"
 
 spark-submit --master $SPARKURL --executor-cores 32 --driver-memory 20G --executor-memory 80G --conf spark.eventLog.enabled=true --conf spark.eventLog.dir=$SCRATCH/spark/spark_event_logs src/main/python/tests/single-file-test.py $csvlist $partition $repartition $inputfile $dataset $rows 
 

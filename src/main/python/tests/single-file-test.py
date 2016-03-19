@@ -30,8 +30,9 @@ def test_h5sparkReadsingle():
 
     rdd = refile_paths.flatMap(read.readonep)
     #rdd.cache()
-    print "1st time count: The number of elements in this rdd is %i" % rdd.count()
-    print "2nd time count: The number of elements in this rdd is %i" % rdd.count()
+    #print "1st time count: The number of elements in this rdd is %i" % rdd.count()
+    #print "2nd time count: The number of elements in this rdd is %i" % rdd.count()
+    rdd.first()
     sc.stop()
 def generate_csv(inputpath,dataset,maxdim,outputcsv,partition):
     os.remove(outputcsv)

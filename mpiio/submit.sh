@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH -p debug 
-#SBATCH -N 50
+#SBATCH -N 40
 #SBATCH -t 00:20:20
 #SBATCH -J h5move
 #SBATCH -e %j.err
@@ -14,4 +14,5 @@
 
 ##Test Alex's 2TB
 module load cray-hdf5-parallel
-srun -n 1600 ./h5move -i /global/cscratch1/sd/gittens/CFSROhdf5/oceanTemps.hdf5 -o /global/cscratch1/sd/jialin/hdf-data/climate/temp1.h5  -n 25 -k 0 -v temperatures
+#srun -n 1600 ./h5read -f /global/cscratch1/sd/gittens/CFSROhdf5/oceanTemps.hdf5  -b 16777216 -n 50 -k 0 -v temperatures
+srun -n 1200 ./h5move -i /global/cscratch1/sd/gittens/CFSROhdf5/oceanTemps.hdf5 -o /global/cscratch1/sd/jialin/climate/temp2.h5 -b 16777216 -n 50 -k 0 -v temperatures

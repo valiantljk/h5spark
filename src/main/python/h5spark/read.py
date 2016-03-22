@@ -5,8 +5,9 @@
 
 import h5py
 from pyspark.mllib.linalg.distributed import  IndexedRowMatrix
-
-
+import datetime
+import time
+import calendar
 # In[30]:
 
 def readH5(sc, file_list_or_txt_file, partitions=None):
@@ -53,9 +54,11 @@ def readones(filename_dataname_tuple):
 #read a slice from one dataset/file
 def readonep(paralist):
     x=[x.strip() for x in paralist.split(',')]
+    print x[0], calendar.timegm(time.gmtime())
     try:
         f=h5py.File(x[0],'r')
         d=f[x[1]][int(x[2]):int(x[3]), : ]
+	print x[0], calendar.timegm(time.gmtime())
         return list(d[:])
     except Exception, e:
            print "ioerror:%s"%e, x[0]

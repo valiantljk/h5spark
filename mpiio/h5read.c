@@ -100,7 +100,7 @@ int main(int argc, char **argv){
 
 
   //parallelize along x dims
-  offset[0] = mpi_rank;
+  //offset[0] = mpi_rank;
   hsize_t rest;
   rest = dims_out[0] % mpi_size;
   if(mpi_rank != (mpi_size -1)){
@@ -108,7 +108,7 @@ int main(int argc, char **argv){
   }else{
     count[0] = dims_out[0]/mpi_size + rest;
   }
-
+  offset[0] = dims_out[0]/mpi_size * mpi_rank;
   //select all for other dims
   for(i=1; i<rank; i++){
    offset[i] = 0;

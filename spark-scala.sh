@@ -17,7 +17,7 @@ start-all.sh
 # sbt assembly
 # test the multiple hdf5 file reader:
 export LD_LIBRARY_PATH=$LD_LBRARY_PATH:lib/
-spark-submit --master $SPARKURL --driver-memory 20G --executor-memory 30G --class org.nersc.io.read --conf spark.eventLog.enabled=true --conf spark.eventLog.dir=$SCRATCH/spark/spark_event_logs target/scala-2.10/h5spark-assembly-1.0.jar
+spark-submit --master $SPARKURL --driver-memory 80G --executor-memory 80G --class org.nersc.io.read --conf spark.eventLog.enabled=true --conf spark.eventLog.dir=$SCRATCH/spark/spark_event_logs target/scala-2.10/h5spark-assembly-1.0.jar
 
 
 # check history server information####

@@ -107,7 +107,7 @@ int main(int argc, char **argv){
 
 
   //parallelize along x dims
-  offset[0] = mpi_rank;
+  //offset[0] = mpi_rank;
   hsize_t rest;
   rest = dims_out[0] % mpi_size;
   if(mpi_rank != (mpi_size -1)){
@@ -115,15 +115,18 @@ int main(int argc, char **argv){
   }else{
     count[0] = dims_out[0]/mpi_size + rest;
   }
-
+  offset[0] = dims_out[0]/mpi_size*mpi_rank;
   //select all for other dims
-  for(i=1; i<rank; i++){
+  /*for(i=1; i<rank; i++){
    offset[i] = 0;
    count[i] = dims_out[i];
   }
+  */
+  offset[1]=0;
+  count[1]=dims_out[1];
   //specify the selection in the dataspace for each rank
   H5Sselect_hyperslab(dataspace, H5S_SELECT_SET, offset, NULL, count, NULL);
-
+  
   hsize_t rankmemsize=1;
   hid_t memspace;
   for(i=0; i<rank; i++){  
@@ -133,16 +136,17 @@ int main(int argc, char **argv){
   //memspace = H5Screate_simple(rank, dims_out, NULL);
   //H5Sselect_hyperslab(memspace,H5S_SELECT_SET,offset,NULL,count,NULL);
   memspace = H5Screate_simple(rank,count,NULL);
-  float totalsizegb=mpi_size * rankmemsize / 1024.0 / 1024.0 / 1024.0;
+  float totalsizegb=mpi_size * rankmemsize *size / 1024.0 / 1024.0 / 1024.0;
   //alloc buffer for each rank
-  void * data_t=NULL;
+/*  void * data_t=NULL;
   if(class == H5T_FLOAT){
      if(size==4) data_t = (void *)malloc( rankmemsize * sizeof(float));
      else if(size==8) data_t = (void *)malloc( rankmemsize * sizeof(double));
   }
   else if(class == H5T_INTEGER)
     data_t = (void *)malloc( rankmemsize * sizeof(int)); 
-
+*/
+  double * data_t=malloc( rankmemsize * sizeof(double));
   if(data_t == NULL){
     printf("Memory allocation fails mpi_rank = %d",mpi_rank);
     for (i=0; i< rank; i++){
@@ -151,6 +155,7 @@ int main(int argc, char **argv){
     exit(1);
     return -1;
   }
+  MPI_Barrier(comm);
  //memset(data_t, mpi_rank, dims_x * dims_y * my_z_size);
   double tr0 = MPI_Wtime();  
   if(mpi_rank == 0){
@@ -164,6 +169,10 @@ int main(int argc, char **argv){
    plist = H5Pcreate(H5P_DATASET_XFER);
    H5Pset_dxpl_mpio(plist, H5FD_MPIO_COLLECTIVE);
   }
+  else {
+   plist = H5Pcreate(H5P_DATASET_XFER);
+   H5Pset_dxpl_mpio(plist,H5FD_MPIO_INDEPENDENT);
+  }
   if(class == H5T_INTEGER)
     H5Dread(dataset, H5T_NATIVE_INT, memspace,dataspace, plist, data_t);
   else if(class == H5T_FLOAT){
@@ -172,26 +181,27 @@ int main(int argc, char **argv){
   }
 
   H5Pclose(plist); 
+ MPI_Barrier(comm);
   double tr1 = MPI_Wtime()-tr0;
-  if(mpi_rank==0 ||mpi_rank==mpi_size-1){ 
+  if(mpi_rank==0){ 
    printf("\nRank %d, read time %.2fs\n",mpi_rank,tr1);
    for(i=0; i<rank; i++){
     printf("Start_%d:%d Count_%d:%d\n",i,offset[i],i,count[i]);
    }
    printf("\n");
-   printf("Total Loading %f GB with %d mpi processes \n",totalsizegb,mpi_size);
+   printf("Total Loading %f GB with %d mpi processes\n",totalsizegb,mpi_size);
   }
 
   //close object handle of file 1
-  H5Tclose(datatype);
+ H5Tclose(datatype);
   H5Sclose(dataspace);
   H5Sclose(memspace);
   H5Dclose(dataset);
   H5Fclose(file);
-
-  if(mpi_rank==0) printf("Closing File %s, Opening File %s \n",filename,output);
+  MPI_Barrier(comm);
+  if(mpi_rank==0) printf("Closing File %s ok,\nOpening File %s \n",filename,output);
   //start to write to new places
-  
+  //printf("%d:%d,%d\n",mpi_rank,offset[0],count[0]); 
   hid_t plist_id2, file_id2,dataspace_id2, dataset_id2;
   //new file access property
   plist_id2 = H5Pcreate(H5P_FILE_ACCESS);
@@ -199,63 +209,83 @@ int main(int argc, char **argv){
   H5Pset_fapl_mpio(plist_id2, comm, info);
   //create new file
   file_id2 = H5Fcreate(output, H5F_ACC_TRUNC, H5P_DEFAULT, plist_id2);
-  if(mpi_rank==0) {
-        if(file_id2<0){
-          printf("File %s create error\n",output);
-          return 0;
-        }
-        else {
-          printf("File %s create ok\n",output);
-        }
-  }
+  //file_id2=H5Fcreate(output, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
   H5Pclose(plist_id2);
   //in mem data space for new file, rank, dims_out, same
   dataspace_id2 = H5Screate_simple(rank, dims_out, NULL);
-  if(class == H5T_INTEGER)
+  /*if(class == H5T_INTEGER)
      dataset_id2 = H5Dcreate(file_id2,DATASETNAME, H5T_NATIVE_INT, dataspace_id2, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);     
   else if(class == H5T_FLOAT){
      if(size==4) dataset_id2=H5Dcreate(file_id2,DATASETNAME, H5T_NATIVE_FLOAT, dataspace_id2, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
      else if(size==8) dataset_id2=H5Dcreate(file_id2,DATASETNAME, H5T_NATIVE_DOUBLE, dataspace_id2, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
   }
- 
-  H5Sselect_hyperslab(dataspace_id2, H5S_SELECT_SET, offset, NULL, count, NULL);
-
+  */
+  dataset_id2=H5Dcreate(file_id2,DATASETNAME, H5T_NATIVE_DOUBLE, dataspace_id2, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  H5Sclose(dataspace_id2);
+  dataspace_id2=H5Dget_space(dataset_id2); 
+  herr_t eit=H5Sselect_hyperslab(dataspace_id2, H5S_SELECT_SET, offset, NULL, count, NULL);
+  MPI_Barrier(comm);
   double tw0 = MPI_Wtime();
   if(mpi_rank == 0){
+    if(eit<0) printf("hyperslab error in file 2\n");
     if(col==1)
     printf("IO: Collective Write\n");
     else
     printf("IO: Independent Write\n"); 
   }
  
-  hid_t memspace_id2 = H5Screate_simple(rank, dims_out, NULL);
+  hid_t memspace_id2 = H5Screate_simple(rank, count, NULL);
   hid_t plist_id3 = H5P_DEFAULT;
   if(col==1){
    plist_id3 = H5Pcreate(H5P_DATASET_XFER);
    H5Pset_dxpl_mpio(plist_id3, H5FD_MPIO_COLLECTIVE);
   }
+  else {
+   plist_id3 = H5Pcreate(H5P_DATASET_XFER);
+   H5Pset_dxpl_mpio(plist_id3,H5FD_MPIO_INDEPENDENT);
+  }
 
+/*
   if(class == H5T_INTEGER)
 	H5Dwrite(dataset_id2, H5T_NATIVE_INT, memspace_id2, dataspace_id2, plist_id3, data_t);
   else if(class == H5T_FLOAT){
-     if(size==4) H5Dwrite(dataset_id2, H5T_NATIVE_DOUBLE, memspace_id2, dataspace_id2, plist_id3, data_t); 
-     else if(size==8) H5Dwrite(dataset_id2, H5T_NATIVE_FLOAT, memspace_id2, dataspace_id2, plist_id3, data_t); 
+     if(size==4) H5Dwrite(dataset_id2, H5T_NATIVE_FLOAT, memspace_id2, dataspace_id2, plist_id3, data_t); 
+     else if(size==8) H5Dwrite(dataset_id2, H5T_NATIVE_DOUBLE, memspace_id2, dataspace_id2, plist_id3, data_t); 
   }
   H5Pclose(plist_id3);
-  
+*/
+ //H5Dwrite(dataset_id2, H5T_NATIVE_DOUBLE, memspace_id2, dataspace_id2, H5P_DEFAULT, data_t); 
+ if(mpi_rank==0||mpi_rank==1){
+   printf("rank %d:",mpi_rank);
+   for(i=0;i<10;i++)
+   printf("%.2lf ", *(data_t+i));
+   printf("\n");
+  }  
+  MPI_Barrier(comm);
   double tw1 = MPI_Wtime()-tw0;
   if(mpi_rank==0||mpi_rank==mpi_size-1)
   {
 	printf("rank %d,write time %.2fs\n",mpi_rank,tw1);
 	printf("Total Writing %f GB with %d mpi processes \n",totalsizegb,mpi_size);
   }
-  if(data_t!=NULL)
+
+  if(data_t!=NULL){
    free(data_t);
+   if(mpi_rank==0) printf("data free ok\n");
+  }
 
   //clean up object handle
+  /*H5Tclose(datatype);
+  H5Sclose(dataspace);
+  H5Sclose(memspace);
+  H5Dclose(dataset);
+  H5Fclose(file);
+  */
+
   H5Sclose(dataspace_id2);
   H5Sclose(memspace_id2);
   H5Dclose(dataset_id2);
   H5Fclose(file_id2);
+
   MPI_Finalize();
 }

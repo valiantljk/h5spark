@@ -2,6 +2,9 @@ import os,sys
 import h5py,csv
 from pyspark import SparkContext
 import read
+import datetime
+import time
+import calendar
 
 #read single large hdf5 file
 def test_h5sparkReadsingle():
@@ -21,18 +24,25 @@ def test_h5sparkReadsingle():
     print "maxdim", maxdim
     #generate_csv(input_file,dataset,csvfile, maxdim,hdfpartitions)
     sc=SparkContext(appName="h5sparkread")
+    print "after sc start",calendar.timegm(time.gmtime())
     file_paths = sc.textFile(csvfile, minPartitions=partitions)
     print "The number of files is %i" % file_paths.count()
     print "The number of partitions in file_paths %d"% file_paths.getNumPartitions()
-    refile_paths=file_paths.repartition(hdfpartitions)
+    //refile_paths=file_paths.repartition(100)
+    rdd=rdd.repartition(hdfpartitions)
     print "Afte repartition: The number of partitions in file_paths %d"% refile_paths.getNumPartitions()
     ##count startup time
-
     rdd = refile_paths.flatMap(read.readonep)
-    #rdd.cache()
+    rdd.cache()
+    print "after creating rdd",calendar.timegm(time.gmtime())
     #print "1st time count: The number of elements in this rdd is %i" % rdd.count()
     #print "2nd time count: The number of elements in this rdd is %i" % rdd.count()
+    #rdd=rdd.repartition(hdfpartitions)
+    #print "Afte repartition: The number of partitions in file_paths %d"% rdd.getNumPartitions()
     rdd.first()
+    print "after -first-",calendar.timegm(time.gmtime())
+    print "rddcount:",rdd.count()
+    print "after -count-", calendar.timegm(time.gmtime())
     sc.stop()
 def generate_csv(inputpath,dataset,maxdim,outputcsv,partition):
     os.remove(outputcsv)

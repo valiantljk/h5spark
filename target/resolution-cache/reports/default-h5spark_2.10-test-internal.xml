@@ -7,7 +7,7 @@
 		revision="1.0"
 		conf="test-internal"
 		confs="compile, runtime, test, provided, optional, compile-internal, runtime-internal, test-internal, plugin, sources, docs, pom, scala-tool"
-		date="20160313061928"/>
+		date="20160321152721"/>
 	<dependencies>
 		<module organisation="org.apache.spark" name="spark-mllib_2.10">
 			<revision name="1.3.1" status="release" pubdate="20150410214600" resolver="sbt-chain" artresolver="sbt-chain" homepage="http://spark.apache.org/" downloaded="false" searched="false" default="false" conf="default(compile), default, compile, runtime, master" position="110">

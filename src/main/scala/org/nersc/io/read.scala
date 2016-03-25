@@ -102,7 +102,7 @@ object read {
         var DATASETNAME:String = para{1}.trim
         var start = para{2}.trim.toLong
         var end = para{3}.trim.toLong
-
+        println("start:"+start+"end:"+end)
         var DIM_X: Int = 1
         var DIM_Y: Int = 1
         var RANK: Int = 1
@@ -124,7 +124,7 @@ object read {
         if (file_id < 0) {
          logger.info("File open error" + FILENAME)
         }
-
+        else println("File open ok"+FILENAME+"\n")
         //Open an existing dataset/variable
         try{
          dataset_id = H5Dopen(file_id,DATASETNAME, H5P_DEFAULT)
@@ -132,7 +132,8 @@ object read {
         catch{
          case e: Exception=> println("Dataset open error:" + DATASETNAME+"\nDataset_id: "+dataset_id)
         }
-        if (dataset_id < 0) logger.info("File open error:" + FILENAME)
+        if (dataset_id < 0) logger.info("Dataset open error:" + DATASETNAME)
+        else println("Dataset open ok:"+DATASETNAME)
 
         //Get dimension information of the dataset
         try{
@@ -142,6 +143,7 @@ object read {
         catch{
          case e: Exception=>println("Dataspace open error,dataspace_id: "+dataspace_id)
         }
+	println("dset_dims(0):"+dset_dims(0)+"dset_dims[1]:"+dset_dims(1))
         //var dset_data = Array.ofDim[Float](dset_dims(0).toInt,dset_dims(1).toInt)
 	var dset_data = Array.ofDim[Double]((end-start).toInt,dset_dims(1).toInt)
         // Read the data using the default properties.
@@ -157,7 +159,8 @@ object read {
           H5P_DEFAULT, dset_data)
         }
         if(dread_id<0)
-          logger.info("Dataset open error" + FILENAME)
+          logger.info("Data read error:" + dread_id)
+	else println("Data read ok\n")
 
         dset_data
   }
@@ -174,16 +177,19 @@ object read {
 
     */
     //$csvlist $partition $repartition $inputfile $dataset $rows
-    if(args.length <=6) System.exit(1);
-    val csvfile =  args(1)
-    val partitions = args(2).toInt
-    val repartition=args(3).toInt
-    val input=args(4).toInt
-    val variable = args(5)
-    val rows=args(6).toInt
+    if(args.length <6) {
+	println("arguments less than 6")
+	System.exit(1);
+    }
+    val csvfile =  args(0)
+    val partitions = args(1).toInt
+    val repartition = args(2).toInt
+    val input = args(3)
+    val variable = args(4)
+    val rows = args(5).toInt
     val sparkConf = new SparkConf().setAppName("h5spark-scala")
     val sc =new SparkContext(sparkConf)
-    val dsetrdd =  sc.textFile(csvfile,minPartitions=partitions).repartition(repartition).flatMap(read.readone)
+    val dsetrdd =  sc.textFile(csvfile,minPartitions=partitions).repartition(repartition).flatMap(read.readonep)
     //val dsetrdd = file_path.flatMap(read.readonep)
     dsetrdd.cache()
     var xcount= dsetrdd.count()

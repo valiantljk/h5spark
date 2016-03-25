@@ -7,7 +7,7 @@
 [0m[[0mdebug[0m] [0m== resolving dependencies for default#h5spark_2.10;1.0 [compile][0m
 [0m[[0mdebug[0m] [0m== resolving dependencies default#h5spark_2.10;1.0->org.scala-lang#scala-library;2.10.5 [compile->default(compile)][0m
 [0m[[0minfo[0m] [0mResolving org.scala-lang#scala-library;2.10.5 ...[0m
-[0m[[0mdebug[0m] [0msbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@47b63d49[0m
+[0m[[0mdebug[0m] [0msbt-chain: Checking cache for: sbt.ivyint.MergedDescriptors@485be69a[0m
 [0m[[0mdebug[0m] [0msbt-chain: module revision found in cache: org.scala-lang#scala-library;2.10.5[0m
 [0m[[0mdebug[0m] [0m	found org.scala-lang#scala-library;2.10.5 in sbt-chain[0m
 [0m[[0mdebug[0m] [0m	[2.10.5] org.scala-lang#scala-library;2.10.5[0m
@@ -9215,7 +9215,7 @@
 [0m[[0mdebug[0m] [0m	[NOT REQUIRED] org.scala-lang#scala-reflect;2.10.5!scala-reflect.jar[0m
 [0m[[0mdebug[0m] [0m	[NOT REQUIRED] org.scala-lang#jline;2.10.5!jline.jar[0m
 [0m[[0mdebug[0m] [0m	[NOT REQUIRED] org.fusesource.jansi#jansi;1.4!jansi.jar[0m
-[0m[[0mdebug[0m] [0m:: resolution report :: resolve 5835ms :: artifacts dl 325ms[0m
+[0m[[0mdebug[0m] [0m:: resolution report :: resolve 3131ms :: artifacts dl 109ms[0m
 [0m[[0mdebug[0m] [0m	report for default#h5spark_2.10;1.0 compile produced in /global/u1/j/jialin/spark-io/h5spark/target/resolution-cache/reports/default-h5spark_2.10-compile.xml[0m
 [0m[[0mdebug[0m] [0m	report for default#h5spark_2.10;1.0 runtime produced in /global/u1/j/jialin/spark-io/h5spark/target/resolution-cache/reports/default-h5spark_2.10-runtime.xml[0m
 [0m[[0mdebug[0m] [0m	report for default#h5spark_2.10;1.0 test produced in /global/u1/j/jialin/spark-io/h5spark/target/resolution-cache/reports/default-h5spark_2.10-test.xml[0m
@@ -9229,5 +9229,5 @@
 [0m[[0mdebug[0m] [0m	report for default#h5spark_2.10;1.0 docs produced in /global/u1/j/jialin/spark-io/h5spark/target/resolution-cache/reports/default-h5spark_2.10-docs.xml[0m
 [0m[[0mdebug[0m] [0m	report for default#h5spark_2.10;1.0 pom produced in /global/u1/j/jialin/spark-io/h5spark/target/resolution-cache/reports/default-h5spark_2.10-pom.xml[0m
 [0m[[0mdebug[0m] [0m	report for default#h5spark_2.10;1.0 scala-tool produced in /global/u1/j/jialin/spark-io/h5spark/target/resolution-cache/reports/default-h5spark_2.10-scala-tool.xml[0m
-[0m[[0mdebug[0m] [0m	resolve done (5835ms resolve - 325ms download)[0m
+[0m[[0mdebug[0m] [0m	resolve done (3131ms resolve - 109ms download)[0m
 [0m[[0minfo[0m] [0mDone updating.[0m

@@ -173,20 +173,17 @@ object read {
     }
 
     */
-
-    val masterURL = if (args.length <= 1) "local[2]" else args(1)
-    val partitions = if (args.length <= 2) 2 else args(2).toInt
-    val dimension = if (args.length <= 3) (4, 3) else (args(3).toInt, args(3).toInt)
-    val variable = if (args.length <= 4) "test" else args(4)
-    val hdfspath = if (args.length <= 5) "src/resources/hdf5/1.h5" else args(5)
-    val csvfile = if(args.length <= 6) "src/resources/hdf5/scala-filelist" else args(6)
-    //val csvfile =  if(args.length <= 6) "src/resources/hdf5/scala-filelistp" else args(6)
-
-    val sparkConf = new SparkConf().setAppName("h5spark").setMaster(masterURL)
+    //$csvlist $partition $repartition $inputfile $dataset $rows
+    if(args.length <=6) System.exit(1);
+    val csvfile =  args(1)
+    val partitions = args(2).toInt
+    val repartition=args(3).toInt
+    val input=args(4).toInt
+    val variable = args(5)
+    val rows=args(6).toInt
+    val sparkConf = new SparkConf().setAppName("h5spark-scala")
     val sc =new SparkContext(sparkConf)
-    val file_path =  sc.textFile(csvfile,minPartitions=partitions)
-
-    val dsetrdd =file_path.flatMap(read.readone)
+    val dsetrdd =  sc.textFile(csvfile,minPartitions=partitions).repartition(repartition).flatMap(read.readone)
     //val dsetrdd = file_path.flatMap(read.readonep)
     dsetrdd.cache()
     var xcount= dsetrdd.count()

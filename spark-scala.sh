@@ -2,7 +2,7 @@
 
 
 #SBATCH -p debug
-#SBATCH -N 2
+#SBATCH -N 3
 #SBATCH -t 00:10:00
 #SBATCH -e mysparkjob_%j.err
 #SBATCH -o mysparkjob_%j.out
@@ -17,9 +17,28 @@ start-all.sh
 # sbt assembly
 # test the multiple hdf5 file reader:
 export LD_LIBRARY_PATH=$LD_LBRARY_PATH:lib/
-spark-submit --master $SPARKURL --driver-memory 80G --executor-memory 80G --class org.nersc.io.read --conf spark.eventLog.enabled=true --conf spark.eventLog.dir=$SCRATCH/spark/spark_event_logs target/scala-2.10/h5spark-assembly-1.0.jar
-
-
+###load single large hdf5 file####
+partition="1"
+repartition="10"
+inputfile="/global/cscratch1/sd/jialin/climate/oceanTemps.hdf5"
+dataset="temperatures"
+rows="6349676"
+type="64"
+#csvlist="src/resources/hdf5/oceanlist.csv"
+csvlist="src/resources/hdf5/oceanlist10.csv"
+spark-submit --verbose\
+  --master $SPARKURL\
+  --driver-memory 100G\
+  --executor-cores 32 \
+  --driver-cores 32  \
+  --num-executors=2  \
+  --executor-memory 100G\
+  --class org.nersc.io.read\
+  --conf spark.eventLog.enabled=true\
+  --conf spark.eventLog.dir=$SCRATCH/spark/spark_event_logs\
+  target/scala-2.10/h5spark-assembly-1.0.jar
+  $csvlist $partition $repartition $inputfile $dataset $rows 
+#$csvlist $partition $repartition $inputfile $dataset $rows
 # check history server information####
 # module load spark/hist-server
 # ./run_history_server.sh $EVENT_LOGS_DIR 

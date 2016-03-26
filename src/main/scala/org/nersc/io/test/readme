@@ -3,6 +3,8 @@
 #include jar files in classpath
 export CLASSPATH=$CLASSPATH:/global/homes/j/jialin/spark-io/h5spark/lib/slf4j-nop-1.7.5.jar
 export CLASSPATH=$CLASSPATH:/global/homes/j/jialin/spark-io/h5spark/lib/jarhdf5-2.11.0.jar
+export CLASSPATH=$CLASSPATH:/global/homes/j/jialin/spark-io/h5spark/lib/slf4j-api-1.7.5.jar
+
 #include c library in ld_library_path
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/global/homes/j/jialin/spark-io/h5spark/lib/
 

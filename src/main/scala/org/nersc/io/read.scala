@@ -17,7 +17,7 @@ import ncsa.hdf.hdf5lib._
 import ncsa.hdf.hdf5lib.H5._
 import ncsa.hdf.hdf5lib.HDF5Constants._
 import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException
-
+import ncsa.hdf.hdf5lib.exceptions.HDF5Exception
 import org.slf4j.LoggerFactory
 import scala.io.Source
 import java.io.File
@@ -57,7 +57,7 @@ object read {
       	 file_id = H5Fopen(FILENAME, H5F_ACC_RDONLY, H5P_DEFAULT)
     	}
     	catch{
-     	 case e: HDF5LibraryException=>  println("File open error,filename:" + FILENAME+",file_id: "+file_id)
+     	 case e: Exception=>  println("File open error,filename:" + FILENAME+",file_id: "+file_id)
     	}
 
     	if (file_id < 0) {
@@ -93,7 +93,7 @@ object read {
      	  logger.info("Dataset open error" + FILENAME)
   
     	dset_data
-  }
+    }
 
 
     def readonep(x:String): (Array[Array[Double]])= {
@@ -102,7 +102,6 @@ object read {
         var DATASETNAME:String = para{1}.trim
         var start = para{2}.trim.toLong
         var end = para{3}.trim.toLong
-        println("start:"+start+"end:"+end)
         var DIM_X: Int = 1
         var DIM_Y: Int = 1
         var RANK: Int = 1
@@ -110,58 +109,65 @@ object read {
         var file_id = -2
         var dataset_id = -2
         var dataspace_id = -2
-        var dset_dims = new Array[Long](2)
-        dset_dims =Array(1,1)
+	var ranks: Int = 2
+        //dset_dims =Array(1,1)
+        logger.info("Start: "+start+", End: "+end+"\n")
 
         //Open an existing file
         try{
          file_id = H5Fopen(FILENAME, H5F_ACC_RDONLY, H5P_DEFAULT)
         }
         catch{
-         case e: HDF5LibraryException=>  println("File open error,filename:" + FILENAME+",file_id: "+file_id)
+         case e: Exception=>  logger.info("File error: " + FILENAME)
         }
-
-        if (file_id < 0) {
-         logger.info("File open error" + FILENAME)
-        }
-        else println("File open ok"+FILENAME+"\n")
+        if (file_id > 0)logger.info("File ok")
         //Open an existing dataset/variable
         try{
          dataset_id = H5Dopen(file_id,DATASETNAME, H5P_DEFAULT)
         }
         catch{
-         case e: Exception=> println("Dataset open error:" + DATASETNAME+"\nDataset_id: "+dataset_id)
+         case e: Exception=> logger.info("Dataset error")
         }
-        if (dataset_id < 0) logger.info("Dataset open error:" + DATASETNAME)
-        else println("Dataset open ok:"+DATASETNAME)
+        if (dataset_id > 0) logger.info("Dataset ok")
 
         //Get dimension information of the dataset
+	var dset_dims=new Array[Long](2)
         try{
          dataspace_id =  H5Dget_space(dataset_id)
+	 ranks=H5Sget_simple_extent_ndims(dataspace_id)
+	 dset_dims = new Array[Long](ranks)
          H5Sget_simple_extent_dims(dataspace_id, dset_dims,null)
         }
         catch{
-         case e: Exception=>println("Dataspace open error,dataspace_id: "+dataspace_id)
+         case e: Exception=>logger.info("Dataspace error")
         }
-	println("dset_dims(0):"+dset_dims(0)+"dset_dims[1]:"+dset_dims(1))
-        //var dset_data = Array.ofDim[Float](dset_dims(0).toInt,dset_dims(1).toInt)
-	var dset_data = Array.ofDim[Double]((end-start).toInt,dset_dims(1).toInt)
-        // Read the data using the default properties.
+	if(dataspace_id>0) logger.info("Dataspace ok\n")
+	
+	logger.info(dset_dims.mkString(" "))
+        var dset_data = Array.ofDim[Double]((end-start).toInt,dset_dims(1).toInt)   
 	var start_dims= new Array[Long](2)
 	var count_dims= new Array[Long](2)
         start_dims=Array(start,0)
 	count_dims=Array(end-start,dset_dims(1).toLong)
-        H5Sselect_hyperslab(dataspace_id, H5S_SELECT_SET,start_dims, null , count_dims, null)
-        var dread_id = -1
-        if (dataset_id >= 0){
-		dread_id = H5Dread(dataset_id, H5T_NATIVE_DOUBLE,
-          H5S_ALL, dataspace_id,
-          H5P_DEFAULT, dset_data)
-        }
-        if(dread_id<0)
-          logger.info("Data read error:" + dread_id)
-	else println("Data read ok\n")
-
+	logger.info(count_dims.mkString(" "))
+	logger.info("Memory/Task"+count_dims(0)*count_dims(1)*8/1024.0/1024.0+" (MB)")
+        var hyper_id = -2
+	var dread_id = -2
+	var memspace = -2
+	H5Sclose(dataspace_id)
+        //try{
+	dataspace_id =  H5Dget_space(dataset_id)
+	memspace = H5Screate_simple(2, count_dims,null)
+	hyper_id = H5Sselect_hyperslab(dataspace_id, H5S_SELECT_SET,start_dims, null , count_dims, null)
+	dread_id = H5Dread(dataset_id, H5T_NATIVE_DOUBLE,memspace, dataspace_id, H5P_DEFAULT, dset_data)
+        /*}
+	catch{
+	  case e: java.lang.NullPointerException=>logger.info("data object is null")
+	  case e@ ( _: HDF5LibraryException | _: HDF5Exception) =>logger.info("Error from HDF5 library|Failure in the data conversion. Read error info: "+e.getMessage+e.printStackTrace)
+	}
+	*/
+	if(dread_id>0) logger.info("Data read ok\n")
+        
         dset_data
   }
 
@@ -189,11 +195,14 @@ object read {
     val rows = args(5).toInt
     val sparkConf = new SparkConf().setAppName("h5spark-scala")
     val sc =new SparkContext(sparkConf)
-    val dsetrdd =  sc.textFile(csvfile,minPartitions=partitions).repartition(repartition).flatMap(read.readonep)
+    val dsetrdd =  sc.textFile(csvfile,minPartitions=partitions)
+    val pardd=dsetrdd.repartition(repartition)
+    val rdd=pardd.flatMap(read.readonep)
     //val dsetrdd = file_path.flatMap(read.readonep)
-    dsetrdd.cache()
-    var xcount= dsetrdd.count()
-    println("\nRDD Count: "+xcount+"i.e., total number of rows of all hdf5 files\n")
+    rdd.cache()
+    //dsetrdd.count()
+    var xcount= rdd.count()
+    println("\nRDD Count: "+xcount+" , Total number of rows of all hdf5 files\n")
     //println(dset.deep.mkString("\n"))
     
   }

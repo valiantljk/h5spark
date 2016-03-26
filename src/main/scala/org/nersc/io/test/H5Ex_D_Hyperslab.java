@@ -33,7 +33,7 @@ public class H5Ex_D_Hyperslab {
 				dset_data[indx][jndx] = 1;
 
 		// Print the data to the screen.
-		System.out.println("Original Data:");
+		System.out.print("Original Data:");
 		for (int indx = 0; indx < DIM_X; indx++) {
 			System.out.print(" [ ");
 			for (int jndx = 0; jndx < DIM_Y; jndx++)
@@ -89,9 +89,10 @@ public class H5Ex_D_Hyperslab {
 		// H5S_SELECT_NOTB
 		block[0] = 1;
 		block[1] = 1;
+	        int select_id=0;
 		try {
 			if ((filespace_id >= 0)) {
-				H5.H5Sselect_hyperslab(filespace_id, HDF5Constants.H5S_SELECT_NOTB,
+				select_id=H5.H5Sselect_hyperslab(filespace_id, HDF5Constants.H5S_SELECT_NOTB,
 						start, stride, count, block);
 
 				// Write the data to the dataset.
@@ -104,7 +105,7 @@ public class H5Ex_D_Hyperslab {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-
+		System.out.print("hyperslab select id: "+select_id+"\n");
 		// End access to the dataset and release resources used by it.
 		try {
 			if (dataset_id >= 0)
@@ -133,16 +134,17 @@ public class H5Ex_D_Hyperslab {
 		}
 	}
 
-	private static void readHyperslab() {
+	private static void readHyperslab(String[] args) {
 		int file_id = -1;
 		int filespace_id = -1;
 		int dataset_id = -1;
 		int dcpl_id = -1;
 		int[][] dset_data = new int[DIM_X][DIM_Y];
-
+		String FILENAME_dayabay = args[0];
+		String DATASETNAME_dayabay = args[1];
 		// Open an existing file.
 		try {
-			file_id = H5.H5Fopen(FILENAME, HDF5Constants.H5F_ACC_RDONLY, HDF5Constants.H5P_DEFAULT);
+			file_id = H5.H5Fopen(FILENAME_dayabay, HDF5Constants.H5F_ACC_RDONLY, HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -151,12 +153,12 @@ public class H5Ex_D_Hyperslab {
 		// Open an existing dataset.
 		try {
 			if (file_id >= 0)
-				dataset_id = H5.H5Dopen(file_id, DATASETNAME, HDF5Constants.H5P_DEFAULT);
+				dataset_id = H5.H5Dopen(file_id, DATASETNAME_dayabay, HDF5Constants.H5P_DEFAULT);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-
+		/*
 		// Read the data using the default properties.
 		try {
 			if (dataset_id >= 0)
@@ -167,7 +169,7 @@ public class H5Ex_D_Hyperslab {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-
+		/*
 		// Output the data to the screen.
 		System.out.println("Data as written to disk by hyberslabs:");
 		for (int indx = 0; indx < DIM_X; indx++) {
@@ -177,31 +179,36 @@ public class H5Ex_D_Hyperslab {
 			System.out.println("]");
 		}
 		System.out.println();
-
+		*/
 		// Initialize the read array.
-		for (int indx = 0; indx < DIM_X; indx++)
-			for (int jndx = 0; jndx < DIM_Y; jndx++)
-				dset_data[indx][jndx] = 0;
-
+                int xx=Integer.parseInt(args[2]);
+                int yy=Integer.parseInt(args[3]);
+                float[][] dset_datasub = new float[xx][yy];
+		/*
+		for (int indx = 0; indx < xx; indx++)
+			for (int jndx = 0; jndx < yy; jndx++)
+				dset_datasub[indx*yy+jndx] = 0;
+		*/
+		
 		// Define and select the hyperslab to use for reading.
 		try {
 			if (dataset_id >= 0) {
 				filespace_id = H5.H5Dget_space(dataset_id);
 
-				long[] start = { 0, 1 };
+				long[] start = { 0, 0 };
 				long[] stride = { 4, 4 };
-				long[] count = { 2, 2 };
+				long[] count = { xx, yy };
 				long[] block = { 2, 3 };
-
-				if (filespace_id >= 0) {
+				int memspace;
+				if (filespace_id >= 0) {	
+					memspace=H5.H5Screate_simple(2, count, null);
 					H5.H5Sselect_hyperslab(filespace_id, HDF5Constants.H5S_SELECT_SET,
-							start, stride, count, block);
-
+							start, null, count, null);
 					// Read the data using the previously defined hyperslab.
 					if ((dataset_id >= 0) && (filespace_id >= 0))
-						H5.H5Dread(dataset_id, HDF5Constants.H5T_NATIVE_INT,
-								HDF5Constants.H5S_ALL, filespace_id, HDF5Constants.H5P_DEFAULT,
-								dset_data);
+						H5.H5Dread(dataset_id, HDF5Constants.H5T_NATIVE_FLOAT,
+								memspace, filespace_id, HDF5Constants.H5P_DEFAULT,
+								dset_datasub);
 				}
 			}
 		}
@@ -210,11 +217,11 @@ public class H5Ex_D_Hyperslab {
 		}
 
 		// Output the data to the screen.
-		System.out.println("Data as read from disk by hyberslab:");
-		for (int indx = 0; indx < DIM_X; indx++) {
+		System.out.print("Data as read from disk by hyberslab:\n");
+		for (int indx = 0; indx < xx; indx++) {
 			System.out.print(" [ ");
-			for (int jndx = 0; jndx < DIM_Y; jndx++)
-				System.out.print(dset_data[indx][jndx] + " ");
+			for (int jndx = 0; jndx < yy; jndx++)
+				System.out.format("%f ",dset_datasub[indx][jndx]);
 			System.out.println("]");
 		}
 		System.out.println();
@@ -255,8 +262,9 @@ public class H5Ex_D_Hyperslab {
 	}
 
 	public static void main(String[] args) {
-		H5Ex_D_Hyperslab.writeHyperslab();
-		H5Ex_D_Hyperslab.readHyperslab();
+		if(args.length<4) {System.out.print("args\n");System.exit(0);}
+		//H5Ex_D_Hyperslab.writeHyperslab();
+		H5Ex_D_Hyperslab.readHyperslab(args);
 	}
 
 }

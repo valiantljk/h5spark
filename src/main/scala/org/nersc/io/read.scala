@@ -21,7 +21,8 @@ import ncsa.hdf.hdf5lib.exceptions.HDF5Exception
 import org.slf4j.LoggerFactory
 import scala.io.Source
 import java.io.File
-
+import collection.JavaConverters._
+import breeze.linalg._
 //import ncsa.hdf.`object`.{Dataset,HObject}
 
 import org.apache.spark.SparkContext
@@ -144,20 +145,25 @@ object read {
 	if(dataspace_id>0) logger.info("Dataspace ok\n")
 	
 	logger.info(dset_dims.mkString(" "))
-        var dset_data = Array.ofDim[Double]((end-start).toInt,dset_dims(1).toInt)   
-	var start_dims= new Array[Long](2)
-	var count_dims= new Array[Long](2)
-        start_dims=Array(start,0)
-	count_dims=Array(end-start,dset_dims(1).toLong)
+        var dset_data:Array[Array[Double]] = Array.ofDim[Double]((end-start).toInt,dset_dims(1).toInt)   
+	//var dset_data= DenseMatrix.zeros[Double]((end-start).toInt,dset_dims(1).toInt)
+	//var dset_data = Array.ofDim[Double]((end-start).toInt*dset_dims(1).toInt)
+	
+	var start_dims:Array[Long] = new Array[Long](ranks)
+	var count_dims:Array[Long] = new Array[Long](ranks)
+        start_dims(0) = start.toLong
+	start_dims(1) = 0.toLong
+	count_dims(0) = (end-start).toLong
+	count_dims(1) = dset_dims(1).toLong
 	logger.info(count_dims.mkString(" "))
-	logger.info("Memory/Task"+count_dims(0)*count_dims(1)*8/1024.0/1024.0+" (MB)")
+	logger.info("Memory/Task "+count_dims(0)*count_dims(1)*8/1024.0/1024.0+" (MB)")
         var hyper_id = -2
 	var dread_id = -2
 	var memspace = -2
 	H5Sclose(dataspace_id)
         //try{
 	dataspace_id =  H5Dget_space(dataset_id)
-	memspace = H5Screate_simple(2, count_dims,null)
+	memspace = H5Screate_simple(ranks, count_dims,null)
 	hyper_id = H5Sselect_hyperslab(dataspace_id, H5S_SELECT_SET,start_dims, null , count_dims, null)
 	dread_id = H5Dread(dataset_id, H5T_NATIVE_DOUBLE,memspace, dataspace_id, H5P_DEFAULT, dset_data)
         /*}

@@ -3,7 +3,7 @@
 
 #SBATCH -p debug
 #SBATCH -N 2
-#SBATCH -t 00:05:00
+#SBATCH -t 00:15:00
 #SBATCH -e mysparkjob_%j.err
 #SBATCH -o mysparkjob_%j.out
 #SBATCH --ccm
@@ -32,6 +32,7 @@ type="64"
 csvlist="src/resources/hdf5/oceanlist1.csv"
 #csvlist="src/resources/hdf5/dayabay-slice1.csv"
 #csvlist="src/resources/hdf5/scala-filelist"
+argsjava="/global/cscratch1/sd/jialin/climate/oceanTemps.hdf5,temperatures,4583256,4585372"
 
 spark-submit --verbose\
   --master $SPARKURL\
@@ -40,12 +41,14 @@ spark-submit --verbose\
   --driver-cores 32  \
   --num-executors=1  \
   --executor-memory 100G\
-  --class org.nersc.io.read\
+  --class org.nersc.io.readtest\
   --conf spark.eventLog.enabled=true\
   --conf spark.eventLog.dir=$SCRATCH/spark/spark_event_logs\
   target/scala-2.10/h5spark-assembly-1.0.jar \
   $csvlist $partition $repartition $inputfile $dataset $rows 
 
+
+#  $argsjava
 #$csvlist $partition $repartition $inputfile $dataset $rows
 # check history server information####
 # module load spark/hist-server

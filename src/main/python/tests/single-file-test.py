@@ -39,11 +39,11 @@ def test_h5sparkReadsingle():
     #rdd=rdd.repartition(hdfpartitions)
     #print "Afte repartition: The number of partitions in file_paths %d"% rdd.getNumPartitions()
     #print "rddfirst:",rdd.first()
-    print "rddcount:",rdd.count()
-    print "rddcount:",rdd.count()
-    rdd.count
-    rdd.first()
-    rdd.take(10)    
+    print "rddcount1:",rdd.count()
+    print "rddcount2:",rdd.count()
+    #rdd.count
+    print "First RDD:",rdd.first()
+    #rdd.take(10)    
     #print "after -count-", calendar.timegm(time.gmtime())
     sc.stop()
 def generate_csv(inputpath,dataset,maxdim,outputcsv,partition):

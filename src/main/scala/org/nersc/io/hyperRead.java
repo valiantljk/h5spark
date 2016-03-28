@@ -60,7 +60,7 @@ public class hyperRead {
 
 		Integer dim2=(int)(long)dset_dims[1];
 		double[][] dset_datasub = new double[endr-startr][dim2];
-		
+	 	double[] temp = new double[(endr-startr)*dim2];	
 		// Define and select the hyperslab to use for reading.
 		try {
 			if (dataset_id >= 0) {
@@ -76,14 +76,18 @@ public class hyperRead {
 					if ((dataset_id >= 0) && (filespace_id >= 0))
 						H5.H5Dread(dataset_id, HDF5Constants.H5T_NATIVE_DOUBLE,
 								memspace, filespace_id, HDF5Constants.H5P_DEFAULT,
-								dset_datasub);
+								temp);
 				}
 			}
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-
+		int i,j;
+		for(i=0;i<endr-startr;i++)
+		for(j=0;j<dim2;j++){
+			dset_datasub[i][j]=temp[i*dim2+j];
+		}
 		// End access to the dataset and release resources used by it.
 		try {
 			if (dataset_id >= 0)

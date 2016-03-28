@@ -30,28 +30,29 @@ object readtest {
 	println("arguments less than 6")
 	System.exit(1);
     }
-    val csvfile =  args(0)
-    val partitions = args(1).toInt
-    val repartition = args(2).toInt
-    val input = args(3)
-    val variable = args(4)
-    val rows = args(5).toInt
-    val sparkConf = new SparkConf().setAppName("h5spark-scala")
+    var logger = LoggerFactory.getLogger(getClass)
+    var csvfile =  args(0)
+    var partitions = args(1).toInt
+    var repartition = args(2).toInt
+    var input = args(3)
+    var variable = args(4)
+    var rows = args(5).toInt
+    var sparkConf = new SparkConf().setAppName("h5spark-scala")
     val sc =new SparkContext(sparkConf)
     val dsetrdd =  sc.textFile(csvfile,minPartitions=partitions)
-    val pardd=dsetrdd.repartition(repartition)
-    //val s=  new hyperRead
-    import org.nersc.io._
-    //val test=hyperRead.readHyperslab()  
-    //println(test.deep.mkString("\n"))
-   //org.nersc.io2.hyperRead.readHyperslab("/global/cscratch1/sd/jialin/climate/oceanTemps.hdf5,temperatures,4583256,4585372")
-    val rdd=pardd.flatMap(hyperRead.readHyperslab)
-    //val dsetrdd = file_path.flatMap(readHyperslab())
+    val pardd=dsetrdd.repartition(repartition) 
+
+    //java version
+    //import org.nersc.io._
+    //val rdd=pardd.flatMap(hyperRead.readHyperslab)
+
+    //scala version
+    val rdd=pardd.flatMap(read.readonep)
     rdd.cache()
-    //dsetrdd.count()
     var xcount= rdd.count()
-    println("\nRDD Count: "+xcount+" , Total number of rows of all hdf5 files\n")
-    //println(dset.deep.mkString("\n"))
+    logger.info("\nRDD Count: "+xcount+" , Total number of rows of all hdf5 files\n")
+    logger.info("\nRDD First: "+rdd.first())
+    rdd.collect()(0).foreach(println)
     sc.stop()
   }
 

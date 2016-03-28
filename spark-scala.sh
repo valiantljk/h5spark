@@ -3,7 +3,7 @@
 
 #SBATCH -p debug
 #SBATCH -N 2
-#SBATCH -t 00:15:00
+#SBATCH -t 00:05:00
 #SBATCH -e mysparkjob_%j.err
 #SBATCH -o mysparkjob_%j.out
 #SBATCH --ccm
@@ -21,7 +21,7 @@ start-all.sh
 export LD_LIBRARY_PATH=$LD_LBRARY_PATH:$PWD/lib
 ###load single large hdf5 file####
 partition="1"
-repartition="1"
+repartition="2"
 inputfile="/global/cscratch1/sd/jialin/climate/oceanTemps.hdf5"
 dataset="temperatures"
 #inputfile="/global/cscratch1/sd/jialin/dayabay/dayabay-final.h5"
@@ -30,6 +30,7 @@ rows="6349676"
 type="64"
 #csvlist="src/resources/hdf5/oceanlist.csv"
 csvlist="src/resources/hdf5/oceanlist1.csv"
+#csvlist="src/resources/hdf5/oceanlist10.csv"
 #csvlist="src/resources/hdf5/dayabay-slice1.csv"
 #csvlist="src/resources/hdf5/scala-filelist"
 argsjava="/global/cscratch1/sd/jialin/climate/oceanTemps.hdf5,temperatures,4583256,4585372"
@@ -37,9 +38,9 @@ argsjava="/global/cscratch1/sd/jialin/climate/oceanTemps.hdf5,temperatures,45832
 spark-submit --verbose\
   --master $SPARKURL\
   --driver-memory 100G\
-  --executor-cores 32 \
+  --executor-cores 1 \
   --driver-cores 32  \
-  --num-executors=1  \
+  --num-executors=1 \
   --executor-memory 100G\
   --class org.nersc.io.readtest\
   --conf spark.eventLog.enabled=true\

@@ -90,7 +90,9 @@ object read {
     	dset_data
     }
 
-
+   /* Currently, the function 'readonep' takes a string that contains "filename,variablename,startrowId,endrowId" and assumes the data is 2D double. 
+   *  The function leverages the HDF5 JNI interface to read a hyperslab/chunk from the HDF5 file. 
+   */ 
     def readonep(x:String): (Array[Array[Double]])= {
         var para =x.split(",")
         var FILENAME = para{0}.trim

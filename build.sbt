@@ -14,7 +14,7 @@ resolvers ++= Seq(
   	"Sonatype Releases" at "https://oss.sonatype.org/content/repositories/releases/"
 )
 
-mainClass in (Compile,run) := Some("org.nersc.io.hyperRead")
+//mainClass in (Compile,run) := Some("org.nersc.io.hyperRead")
 //mainClass in (Compile,run) := Some("org.nersc.io.write")
 libraryDependencies ++= Seq(
     "org.apache.spark" %% "spark-core" % "1.5.1" % "provided",

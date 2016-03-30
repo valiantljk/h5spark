@@ -152,7 +152,7 @@ object read {
    /* Currently, the function 'readonep' takes a string that contains "filename,variablename,startrowId,endrowId" and assumes the data is 2D double. 
    *  The function leverages the HDF5 JNI interface to read a hyperslab/chunk from the HDF5 file. 
    */ 
-    def readonep(x:String): (Array[Array[Double]])= {
+    def readonep(x:String): (Vector[Vector[Double]])= {
         var para =x.split(",")
         var FILENAME = para{0}.trim
         var DATASETNAME:String = para{1}.trim
@@ -201,9 +201,12 @@ object read {
 	if(dataspace_id>0) logger.info("\nDataspace ok\n")
 	
 	logger.info("\n"+dset_dims.mkString(" "))
-        var dset_data:Array[Array[Double]] = Array.ofDim[Double]((end-start).toInt,dset_dims(1).toInt)	
-	var dset_datas = Array.ofDim[Double]((end-start).toInt*dset_dims(1).toInt)
-	
+        //var dset_data:Array[Array[Double]] = Array.ofDim[Double]((end-start).toInt,dset_dims(1).toInt)	
+	//var dset_datas = Array.ofDim[Double]((end-start).toInt*dset_dims(1).toInt)
+
+        var dset_data:Vector[Vector[Double]] = Vector.fill((end-start).toInt,dset_dims(1).toInt)(0.0)
+        var dset_datas = Vector.fill((end-start).toInt*dset_dims(1).toInt)(0.0)
+
 	var start_dims:Array[Long] = new Array[Long](ranks)
 	var count_dims:Array[Long] = new Array[Long](ranks)
         start_dims(0) = start.toLong
@@ -223,7 +226,7 @@ object read {
 	dataspace_id =  H5Dget_space(dataset_id)
 	memspace = H5Screate_simple(ranks, count_dims,null)
 	hyper_id = H5Sselect_hyperslab(dataspace_id, H5S_SELECT_SET,start_dims, null , count_dims, null)
-	dread_id = H5Dread(dataset_id, H5T_NATIVE_DOUBLE,memspace, dataspace_id, H5P_DEFAULT, dset_datas)
+	dread_id = H5Dread(dataset_id, H5T_NATIVE_DOUBLE,memspace, dataspace_id, H5P_DEFAULT, dset_data)
         }
 	catch{
 	  case e: java.lang.NullPointerException=>logger.info("data object is null")
@@ -231,7 +234,7 @@ object read {
 	}
 
 	if(dread_id>0) logger.info("\nData read ok\n")
-
+	/*
         var id=0
 	var jd=0	
 	for( id <-0 to (end-start).toInt-1){
@@ -240,7 +243,7 @@ object read {
 		
 	 }
 	}	
-	        
+	*/        
         dset_data
   }
 }

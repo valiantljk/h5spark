@@ -5,9 +5,7 @@
 
 import h5py
 from pyspark.mllib.linalg.distributed import  IndexedRowMatrix
-import datetime
 import time
-import calendar
 import os
 
 # In[30]:
@@ -15,10 +13,10 @@ import os
 def readH5(sc,file_list_or_txt_file,mode='multi', partitions=None):
 	if mode == 'multi':
 		return readH5Multi(sc, file_list_or_txt_file, partitions)
-	elif mode == 'single_chunked':
+	elif mode == 'single':
 		return readH5SingleChunked(sc, file_list_or_txt_file, partitions)
 	else:
-		raise NotImplementedError("You specified a mode that is not implemented")
+		raise NotImplementedError("You specified a mode that is not implemented. Currently support multi small files (e.g., ~5G) parallel read mode: multi and single large file(TB) parallel read mode: single")
 
 def readH5Multi(sc, file_list_or_txt_file, partitions=None):
     '''Takes in a list of (file, dataset) tuples, one such tuple or the name of a file that contains
@@ -41,7 +39,7 @@ def readH5Multi(sc, file_list_or_txt_file, partitions=None):
     return ret
 
 def readH5SingleChunked(sc, filename_dataset_tuple, partitions):
-	assert isinstance(filename_dataset_tuple,tuple), "for single chunked mode you must input a tuple. Other type are not implemented yet"
+	assert isinstance(filename_dataset_tuple,tuple), "For single file mode, you must input a tuple."
 	filename, dataset = filename_dataset_tuple
 	rows = h5py.File(filename)[dataset].shape[0]
 	if not partitions:
@@ -58,11 +56,6 @@ def h5ToIndexedRowMatrix(sc, file_list_or_txt_file, mode='multi', partitions=Non
     rdd = readH5(sc, file_list_or_txt_file,mode, partitions)
     indexed_rows = rdd.zipWithIndex().map(lambda (v,k): (k,v))
     return IndexedRowMatrix(indexed_rows)
-    
-    
-def readmul(paralist):
-    x=[x.strip() for x in paralist.split(',')]
-    return readones((x[0],x[1]))
 
 #read one dataset/file each time. 
 def readones(filename_dataname_tuple):
@@ -78,22 +71,7 @@ def readones(filename_dataname_tuple):
           return a
 
 #read a slice from one dataset/file
-
-def readonep(paralist):
-    x=[x.strip() for x in paralist.split(',')]
-    print x[0], calendar.timegm(time.gmtime())
-    try:
-        f=h5py.File(x[0],'r')
-        d=f[x[1]][int(x[2]):int(x[3]), : ]
-	print x[0], calendar.timegm(time.gmtime())
-        return list(d[:])
-    except Exception, e:
-           print "ioerror:%s"%e, x[0]
-    finally:
-        pass
-        f.close()
-
-def readonepp(filename, dset_name, i1, chunk_size):
+def readonep(filename, dset_name, i1, chunk_size):
 	try:
 		f=h5py.File(filename,'r')
 		d = f[dset_name]

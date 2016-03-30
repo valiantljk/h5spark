@@ -90,6 +90,65 @@ object read {
     	dset_data
     }
 
+
+    //loading 5 varialbes, each has 8 time step, then connect same timestep of variable into one vector
+    //finally, return 8 by (5*) 2D double array, note the orginal data is float
+    def readone_multiVariable(x:String): (Array[Array[Float]])= {
+        var para =x.split(",")
+        var FILENAME = para{0}.trim
+        var DATASETNAME:String = para{1}.trim
+        var DIM_X: Int = 1
+        var DIM_Y: Int = 1
+        var RANK: Int = 1
+        var logger = LoggerFactory.getLogger(getClass)
+        var file_id = -2
+        var dataset_id = -2
+        var dataspace_id = -2
+        var dset_dims = new Array[Long](2)
+        dset_dims =Array(1,1)
+
+        //Open an existing file
+        try{
+         file_id = H5Fopen(FILENAME, H5F_ACC_RDONLY, H5P_DEFAULT)
+        }
+        catch{
+         case e: Exception=>  println("\nFile open error,filename:" + FILENAME+",file_id: "+file_id)
+        }
+
+        if (file_id < 0) {
+         logger.info("\nFile open error" + FILENAME)
+        }
+
+        //Open an existing dataset/variable
+        try{
+         dataset_id = H5Dopen(file_id,DATASETNAME, H5P_DEFAULT)
+        }
+        catch{
+         case e: Exception=> println("\nDataset open error:" + DATASETNAME+"\nDataset_id: "+dataset_id)
+        }
+        if (dataset_id < 0) logger.info("File open error:" + FILENAME)
+
+        //Get dimension information of the dataset
+        try{
+         dataspace_id =  H5Dget_space(dataset_id)
+         H5Sget_simple_extent_dims(dataspace_id, dset_dims,null)
+        }
+        catch{
+         case e: Exception=>println("Dataspace open error,dataspace_id: "+dataspace_id)
+        }
+        var dset_data = Array.ofDim[Float](dset_dims(0).toInt,dset_dims(1).toInt)
+        // Read the data using the default properties.
+        var dread_id = -1
+        if (dataset_id >= 0){
+          dread_id = H5Dread(dataset_id, H5T_NATIVE_FLOAT,
+          H5S_ALL, H5S_ALL,
+          H5P_DEFAULT, dset_data)
+        }
+        if(dread_id<0)
+          logger.info("Dataset open error" + FILENAME)
+
+        dset_data
+    } 
    /* Currently, the function 'readonep' takes a string that contains "filename,variablename,startrowId,endrowId" and assumes the data is 2D double. 
    *  The function leverages the HDF5 JNI interface to read a hyperslab/chunk from the HDF5 file. 
    */ 

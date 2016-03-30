@@ -51,8 +51,8 @@ object readtest {
     rdd.cache()
     var xcount= rdd.count()
     logger.info("\nRDD Count: "+xcount+" , Total number of rows of all hdf5 files\n")
-    logger.info("\nRDD First: "+rdd.first())
-    rdd.collect()(0).foreach(println)
+    //logger.info("\nRDD First: "+rdd.first())
+    //rdd.collect()(0).foreach(println)
     sc.stop()
   }
 

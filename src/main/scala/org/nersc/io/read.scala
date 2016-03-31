@@ -22,7 +22,9 @@ import org.slf4j.LoggerFactory
 import scala.io.Source
 import java.io.File
 
-
+import org.apache.spark.mllib.linalg.distributed.DistributedMatrix._
+import org.apache.spark.rdd._
+import org.apache.spark.SparkContext
 object read {
 
   /**
@@ -249,3 +251,24 @@ object read {
         dset_data
   }
 }
+
+def readH5SingleChunked(sc: SparkContext, filename: String, dataset: String, partitions: Long, rows: Long): RDD = {
+	var num_partitions: Long = partitions
+	if (rows > num_partitions) {
+		num_partitions = rows
+	}
+	val step: Long = rows / num_partitions
+	val rdd = sc.range(0, rows, step, partitions).flatMap(r  => readonep(filename, dataset, r, step)
+	rdd
+	
+
+}
+
+def h5ToIndexedRowMatrix(sc: SparkContext, filename: String, dataset: String, mode: String, partitions: Long): IndexedRowMatrix = {
+	val rdd = readH5SingleChunked(sc, filename, dataset, partitions)
+	val indexed_rows = rdd.zipWithIndex().map( k  => (k._1, k._2)).map(k => new IndexedRow(k._1, k._2))
+	val IRM = new IndexedRowMatrix(indexed_rows)
+	IRM
+
+}
+

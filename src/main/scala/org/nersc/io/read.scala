@@ -151,13 +151,15 @@ object read {
     } 
    /* Currently, the function 'readonep' takes a string that contains "filename,variablename,startrowId,endrowId" and assumes the data is 2D double. 
    *  The function leverages the HDF5 JNI interface to read a hyperslab/chunk from the HDF5 file. 
-   */ 
+   */
+    //def readonep(FILENAME:String,DATASETNAME:String,start:Long,step:Long):(Vector[Vector[Double]])= { 
     def readonep(x:String): (Vector[Vector[Double]])= {
         var para =x.split(",")
         var FILENAME = para{0}.trim
         var DATASETNAME:String = para{1}.trim
         var start = para{2}.trim.toLong
         var end = para{3}.trim.toLong
+    
         var DIM_X: Int = 1
         var DIM_Y: Int = 1
         var RANK: Int = 1

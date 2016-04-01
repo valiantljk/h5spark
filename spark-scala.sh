@@ -54,7 +54,6 @@ spark-submit --verbose\
 # check history server information####
 # module load spark/hist-server
 # ./run_history_server.sh $EVENT_LOGS_DIR 
-
+rm /global/cscratch1/sd/jialin/spark_tmp_dir/*
 stop-all.sh
 stop-collectl.sh
-rm /global/cscratch1/sd/jialin/spark_tmp_dir/*

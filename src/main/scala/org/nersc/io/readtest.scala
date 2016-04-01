@@ -22,38 +22,56 @@ import scala.io.Source
 import org.apache.spark.SparkContext
 import org.apache.spark.SparkConf
 import org.apache.spark.SparkContext._
-
+import org.apache.spark.mllib.linalg.DenseVector
 object readtest {
  def main(args: Array[String]): Unit = {
 
-   if(args.length <6) {
-	println("arguments less than 6")
+   if(args.length <3) {
+	println("arguments less than 3")
 	System.exit(1);
     }
-    var logger = LoggerFactory.getLogger(getClass)
-    var csvfile =  args(0)
-    var partitions = args(1).toInt
-    var repartition = args(2).toInt
-    var input = args(3)
-    var variable = args(4)
-    var rows = args(5).toInt
-    var sparkConf = new SparkConf().setAppName("h5spark-scala")
+    var logger = LoggerFactory.getLogger(getClass)    
+    var partition = args(0).toInt
+    var input = args(1)
+    var variable = args(2)
+    
+    val sparkConf = new SparkConf().setAppName("h5spark-scala")
     val sc =new SparkContext(sparkConf)
-    val dsetrdd =  sc.textFile(csvfile,minPartitions=partitions)
-    val pardd=dsetrdd.repartition(repartition) 
+
+    val rdd = read.h5read (sc,input,variable,partition)
+    rdd.cache()
+    val count= rdd.count()
+    logger.info("\nRDD_Count: "+count+" , Total number of rows of all hdf5 files\n")
+    logger.info("\nRDD_First: ")
+    rdd.take(1)(0).toArray.foreach(println)
+    sc.stop()
+  }
+
+}
+
+
+/*
+
+    /* h5spark prototyping:
+
+    val rdd        = h5read      (sc,inpath, variable, repartition)
+    val indexrow   = h5read_irow (sc,inpath, variable, repartition)
+    val indexrowmat= h5read_imat (sc, inpath,variable, repartition)
+
+    */
+
+    //val dsetrdd =  sc.textFile(csvfile,minPartitions=partitions)
+    //val pardd=dsetrdd.repartition(repartition)
 
     //java version
     //import org.nersc.io._
     //val rdd=pardd.flatMap(hyperRead.readHyperslab)
 
     //scala version
-    val rdd=pardd.flatMap(read.readonep)
-    rdd.cache()
-    var xcount= rdd.count()
-    logger.info("\nRDD Count: "+xcount+" , Total number of rows of all hdf5 files\n")
-    //logger.info("\nRDD First: "+rdd.first())
-    //rdd.collect()(0).foreach(println)
-    sc.stop()
-  }
+    /*val rdd=pardd.flatMap(read.readonep).map{
+        case x:Array[Double]=>
+        new DenseVector(x)
+    }
+    */
 
-}
+*/

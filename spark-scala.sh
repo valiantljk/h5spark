@@ -3,7 +3,7 @@
 
 #SBATCH -p debug
 #SBATCH -N 46
-#SBATCH -t 00:10:00
+#SBATCH -t 00:03:00
 #SBATCH -e mysparkjob_%j.err
 #SBATCH -o mysparkjob_%j.out
 #SBATCH --ccm
@@ -46,7 +46,7 @@ spark-submit --verbose\
   --conf spark.eventLog.enabled=true\
   --conf spark.eventLog.dir=$SCRATCH/spark/spark_event_logs\
   target/scala-2.10/h5spark-assembly-1.0.jar \
-  $csvlist $partition $repartition $inputfile $dataset $rows 
+  $repartition $inputfile $dataset 
 
 
 #  $argsjava
@@ -57,3 +57,4 @@ spark-submit --verbose\
 
 stop-all.sh
 stop-collectl.sh
+rm /global/cscratch1/sd/jialin/spark_tmp_dir/*

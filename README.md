@@ -31,23 +31,39 @@ Then import it in python like so:
 6. your_project_dir should be like:
 .
 |-- build.sbt
+
 |-- lib
+
 |-- project
+
 |-- src
+
 |   |-- main
+
 |   |   |-- resources
+
 |   |   |-- scala
+
 |   |-- test
+
 |       |-- resources
+
 |       |-- scala
+
 |-- target
 
 #Use H5spark in your Scala Codes
 1. export LD_LIBRARY_PATH=$LD_LBRARY_PATH:your_project_dir/lib
 2. add these lines in your codes:
+
 import org.nersc.io._
+
 3. then you have a few options to load the data
+
 *Load as an indexedmatrix: val tempmat = read.h5read_imat (sc,inputpath, variablename, partition)
+
 *Load as an indexedrow: val tempmat = read.h5read_irow (sc,inputpath, variablename, partition)
+
 *Load as an array: val tempmat = read.h5read (sc,inputpath, variablename, partition)
+
 4. the inputpath can be an absolute path of a single large HDF5 file, can also be a path to multiple small HDF5 files, e.g, a directory that contains millions of files

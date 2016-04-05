@@ -29,7 +29,8 @@ Then import it in python like so:
 4. cp target/scala-2.10/h5spark_2.10-1.0.jar lib/
 5. cp -r lib/ your_project_dir/ (if you already have a lib directory, then just copy everything in h5spark/lib/* to your lib/)
 6. your_project_dir should be like:
-.
+
+
 |-- build.sbt
 
 |-- lib
@@ -60,10 +61,10 @@ import org.nersc.io._
 
 3. then you have a few options to load the data
 
-*Load as an indexedmatrix: val tempmat = read.h5read_imat (sc,inputpath, variablename, partition)
+** Load as an indexedmatrix: val tempmat = read.h5read_imat (sc,inputpath, variablename, partition)
 
-*Load as an indexedrow: val tempmat = read.h5read_irow (sc,inputpath, variablename, partition)
+** Load as an indexedrow: val tempmat = read.h5read_irow (sc,inputpath, variablename, partition)
 
-*Load as an array: val tempmat = read.h5read (sc,inputpath, variablename, partition)
+** Load as an array: val tempmat = read.h5read (sc,inputpath, variablename, partition)
 
 4. the inputpath can be an absolute path of a single large HDF5 file, can also be a path to multiple small HDF5 files, e.g, a directory that contains millions of files

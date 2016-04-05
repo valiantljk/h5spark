@@ -38,17 +38,17 @@ Then import it in python like so:
 
 |-- src
 
-|   |-- main
+|    |-- main
 
-|   |   |-- resources
+|    |    |-- resources
 
-|   |   |-- scala
+|    |    |-- scala
 
-|   |-- test
+|    |-- test
 
-|       |-- resources
+|        |-- resources
 
-|       |-- scala
+|        |-- scala
 
 |-- target
 

@@ -1,13 +1,14 @@
 #!/bin/bash
 
 
-#SBATCH -p debug
+#SBATCH -p regular
 #SBATCH -N 46
-#SBATCH -t 00:10:00
+#SBATCH -t 00:08:00
 #SBATCH -e mysparkjob_%j.err
 #SBATCH -o mysparkjob_%j.out
 #SBATCH --ccm
-#SBATCH --volume="/global/cscratch1/sd/jialin/spark_tmp_dir/climate:/tmp:perNodeCache=size=200G"
+#SBATCH --qos=premium
+##SBATCH --volume="/global/cscratch1/sd/jialin/spark_tmp_dir/climate:/tmp:perNodeCache=size=200G"
 module unload spark/hist-server
 module load spark
 module unload python
@@ -40,7 +41,7 @@ spark-submit --verbose \
  --driver-cores 32  \
  --num-executors=45  \
  --driver-memory 100G \
- --executor-memory 100G \
+ --executor-memory 105G \
  --conf spark.eventLog.enabled=true \
  --conf spark.eventLog.dir=$SCRATCH/spark/spark_event_logs \
  src/main/python/tests/single-file-test.py \ 

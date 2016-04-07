@@ -49,7 +49,7 @@ def readH5SingleChunked(sc, filename_dataset_tuple, partitions):
 	step = rows / partitions
 	rdd = sc.range(0, rows, step)\
 		.sortBy(lambda x: x, numPartitions=partitions)\
-		.flatMap(lambda x: readonepp(filename,dataset,x,step))
+		.flatMap(lambda x: readonep(filename,dataset,x,step))
 	return rdd
 
 def h5read_irow(sc,file_list_or_txt_file, mode='multi', partitions=None):

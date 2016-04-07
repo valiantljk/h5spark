@@ -2,8 +2,8 @@
 
 
 #SBATCH -p regular
-#SBATCH -N 100
-#SBATCH -t 00:04:00
+#SBATCH -N 46
+#SBATCH -t 00:06:00
 #SBATCH -e mysparkjob_%j.err
 #SBATCH -o mysparkjob_%j.out
 #SBATCH --ccm
@@ -25,23 +25,26 @@ export LD_LIBRARY_PATH=$LD_LBRARY_PATH:$PWD/lib
 ###load single large hdf5 file####
 repartition="3000"
 #inputfile="/global/cscratch1/sd/jialin/climate/oceanTemps.hdf5"
-inputfile="/global/cscratch1/sd/jialin/dayabay/ost1/oceanTemps.hdf5"
-#inputfile="/global/cscratch1/sd/jialin/dayabay/2016/data/2.h5"
+inputfile="/global/cscratch1/sd/jialin/dayabay/ost24/oceanTemps.hdf5"
+#app_name="dayabay/2016/data-multif-scala"
+app_name="ost24/oceanTemps.hdf5-scala"
+#inputfile="/global/cscratch1/sd/jialin/dayabay/2016/data/"
 #inputfile = "/global/cscratch1/sd/gittens/large-climate-dataset/data/production/T.h5"
 #inputfile="/global/cscratch1/sd/jialin/dayabay/dayabay-final.h5"
 dataset="temperatures"
 #dataset="charge"
 #dataset="rows"
 #dataset="autoencoded"
-
+func="array"
 
 
 spark-submit --verbose\
   --master $SPARKURL\
+  --name $app_name \
   --driver-memory 100G\
   --executor-cores 32 \
   --driver-cores 32  \
-  --num-executors=99 \
+  --num-executors=45 \
   --executor-memory 105G\
   --class org.nersc.io.readtest\
   --conf spark.eventLog.enabled=true\

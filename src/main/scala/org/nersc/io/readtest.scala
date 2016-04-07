@@ -26,18 +26,19 @@ import org.apache.spark.mllib.linalg.DenseVector
 object readtest {
  def main(args: Array[String]): Unit = {
 
-   if(args.length <4) {
-	println("Arguments less than 4")
+   if(args.length <3) {
+	println("Arguments less than 3")
 	System.exit(1);
     }
     var logger = LoggerFactory.getLogger(getClass)    
     var partition = args(0).toInt
     var input = args(1)
     var variable = args(2)
-    var app_name = args(3) 
-    val sparkConf = new SparkConf().setAppName(app_name)
-    val sc =new SparkContext(sparkConf)
-
+    //var app_name = args(3) 
+    //val sparkConf = new SparkConf().setAppName(app_name)
+    //val sparkConf = new SparkConf()
+    //val sc =new SparkContext(sparkConf)
+    val sc = new SparkContext()
     val rdd = read.h5read (sc,input,variable,partition)
     rdd.cache()
     val count= rdd.count()

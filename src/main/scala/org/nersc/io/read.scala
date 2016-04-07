@@ -28,67 +28,7 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.mllib.linalg.DenseVector
 import org.apache.spark.SparkContext
 object read {
-
-  /**
-   * Gets an NDimensional array of from a hdf
-   * ***** @param FILENAME where the hdf file is located
-   * *****@param DATASETNAME the hdf variable to search for
-   * @param x:string contains (filename, datasetname), a line in a csv file
-   * @return
-   */
-
-    def readone(x:String): (Array[Array[Float]])= {
-    	var para =x.split(",")
-    	var FILENAME = para{0}.trim
-    	var DATASETNAME:String = para{1}.trim
-    	var DIM_X: Int = 1
-    	var DIM_Y: Int = 1    	
-    	var logger = LoggerFactory.getLogger(getClass)
-    	var file_id = -2
-    	var dataset_id = -2
-	var dataspace_id = -2 
-    	var dset_dims = new Array[Long](2)
-    	dset_dims =Array(1,1)
-
-	//Open file
-	try{
-      	 	file_id = H5Fopen(FILENAME, H5F_ACC_RDONLY, H5P_DEFAULT)
-    	}
-    	catch{
-     	 	case e: Exception=>  println("\nFile open error,filename:" + FILENAME+",file_id: "+file_id)
-    	}
-  	
-	//Open dataset/variable
-    	try{
-    	 	dataset_id = H5Dopen(file_id,DATASETNAME, H5P_DEFAULT)
-    	}
-    	catch{
-	 	case e: Exception=> println("\nDataset open error:" + DATASETNAME+"\nDataset_id: "+dataset_id)	 
-    	}
-   
-    	//Get dimension info
-    	try{
-    	 	dataspace_id =  H5Dget_space(dataset_id)
-    	 	H5Sget_simple_extent_dims(dataspace_id, dset_dims,null)
-    	}
-    	catch{
-    	 	case e: Exception=>println("Dataspace open error,dataspace_id: "+dataspace_id)
-    	}
-   	var dset_data = Array.ofDim[Float](dset_dims(0).toInt,dset_dims(1).toInt)    
-    	
-    	var dread_id = -1
-    	if (dataset_id >= 0){
-       	  dread_id = H5Dread(dataset_id, H5T_NATIVE_FLOAT,
-          H5S_ALL, H5S_ALL,
-          H5P_DEFAULT, dset_data)
-    	}
-   	if(dread_id<0)
-     	  logger.info("Dataset open error" + FILENAME)
-  
-    	dset_data
-    }
-
-    def getdims(file:String,variable:String):Array[Long]={
+  def getdims(file:String,variable:String):Array[Long]={
 	//Open file
 	var logger = LoggerFactory.getLogger(getClass)
         var file_id = -2
@@ -112,6 +52,14 @@ object read {
         H5Fclose(file_id)
        dset_dims
     }
+
+   /*
+    * Gets an NDimensional array of from a hdf file
+    * @param FILENAME   
+    * @param DATASETNAME 
+    * @return RDD[Array[Double]
+    */
+
 
     def readone(FILENAME:String,DATASETNAME:String): (Array[Array[Double]])= {
        var logger = LoggerFactory.getLogger(getClass)
@@ -149,10 +97,16 @@ object read {
         var dset_data = Array.ofDim[Double](dset_dims(0).toInt,dset_dims(1).toInt)
 	
         var dread_id = -1
-        if (dataset_id >= 0){
+        try {
           dread_id = H5Dread(dataset_id, H5T_NATIVE_DOUBLE,
           H5S_ALL, H5S_ALL,
           H5P_DEFAULT, dset_data)
+        }
+        catch{
+                case e: java.lang.NullPointerException=>logger.info("data object is null")
+                case e@ ( _: HDF5LibraryException | _: HDF5Exception) =>
+                        logger.info("Error from HDF5 library|Failure in the data conversion. Read error info: "+
+                        e.getMessage+e.printStackTrace)
         }
         if(dread_id<0)
           logger.info("Dataset open error" + FILENAME)
@@ -337,52 +291,4 @@ object read {
    }
 */
 }
-
-
-
-
-
-
-
-
-
-/*
-def readH5SingleChunked(sc: SparkContext, filename: String, dataset: String, partitions: Long, rows: Long): RDD = {
-        var num_partitions: Long = partitions
-        if (rows > num_partitions) {
-                num_partitions = rows
-        }
-        val step: Long = rows / num_partitions
-        val rdd = sc.range(0, rows, step, partitions).flatMap(r  => readonep(filename, dataset, r, step)
-        rdd
-
-
-}
-
-def h5ToIndexedRowMatrix(sc: SparkContext, filename: String, dataset: String, mode: String, partitions: Long): IndexedRowMatrix = {
-        val rdd = readH5SingleChunked(sc, filename, dataset, partitions)
-        val indexed_rows = rdd.zipWithIndex().map( k  => (k._1, k._2)).map(k => new IndexedRow(k._1, k._2))
-        val IRM = new IndexedRowMatrix(indexed_rows)
-        IRM
-
-}
-
-    def readonep(x:String): (Array[Array[Double]])= {
-        var para =x.split(",")
-        var FILENAME = para{0}.trim
-        var DATASETNAME:String = para{1}.trim
-        var start = para{2}.trim.toLong
-        var end = para{3}.trim.toLong
-
-        logger.info(count_dims.mkString(" "))
-        logger.info("\nMemory/Task "+count_dims(0)*count_dims(1)*8/1024.0/1024.0+" (MB)")
-
-     
-        var lx=(end-start).toInt
-        var ly=(dset_dims(1)).toInt
-        var dset_data:Vector[Vector[Double]]=Vector.tabulate(lx,ly){(i,j)=>dset_datas(i*ly+j)}
-        
-        var dset_data:Vector[Vector[Double]] = Vector.fill((end-start).toInt,dset_dims(1).toInt)(0.0)
-        var dset_datas = Vector.fill((end-start).toInt*dset_dims(1).toInt)(0.0)
-*/
 

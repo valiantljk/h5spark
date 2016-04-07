@@ -17,20 +17,20 @@ def test_multi_2(sc,path_to_repo):
     h5_list = [(path + '/test_mat2.h5', 'data'),(path + '/test_mat3.h5', 'data') ]
     #h5_list_file = 'file_names_and_pathsd.csv'
     h5_tuple = (path + '/test_mat2.h5', 'data')
-    rdd = read.readH5(sc, h5_list)
+    rdd = read.h5read(sc, h5_list)
     print rdd.take(1)
     #rdd2 = read.readH5(sc, h5_list_file)
     #print rdd2.take(1)
-    rdd3 = read.readH5(sc, h5_tuple)
+    rdd3 = read.h5read(sc, h5_tuple)
     print rdd3.take(1)
     
-    idx_row_m = read.h5ToIndexedRowMatrix(sc, h5_tuple )
+    idx_row_m = read.h5read_imat(sc, h5_tuple )
     print idx.rows.take(1)
     
     
     
 def testmultihdf5(sc,path_to_repo):
-    rdd = read.readH5(sc,path_to_repo)    
+    rdd = read.h5read(sc,path_to_repo)    
 
 # In[ ]:
 

@@ -113,6 +113,58 @@ object read {
        dset_dims
     }
 
+    def readone(FILENAME:String,DATASETNAME:String): (Array[Array[Double]])= {
+       var logger = LoggerFactory.getLogger(getClass)
+        var file_id = -2
+        var dataset_id = -2
+        var dataspace_id = -2
+        var dset_dims = new Array[Long](2)
+        dset_dims =Array(1,1)
+
+        //Open file
+        try{
+                file_id = H5Fopen(FILENAME, H5F_ACC_RDONLY, H5P_DEFAULT)
+        }
+        catch{
+                case e: Exception=>  logger.info("\nFile open error,filename:" + FILENAME)
+        }
+
+        //Open dataset/variable
+        try{
+                dataset_id = H5Dopen(file_id,DATASETNAME, H5P_DEFAULT)
+        }
+        catch{
+                case e: Exception=> logger.info("\nDataset open error:" + DATASETNAME)
+        }
+
+        //Get dimension info
+        try{
+                dataspace_id =  H5Dget_space(dataset_id)
+                H5Sget_simple_extent_dims(dataspace_id, dset_dims,null)
+        }
+        catch{
+                case e: Exception=>logger.info("Dataspace open error,dataspace_id: "+dataspace_id)
+        }
+	if(dset_dims(0)>0&&dset_dims(1)>0){
+        var dset_data = Array.ofDim[Double](dset_dims(0).toInt,dset_dims(1).toInt)
+	
+        var dread_id = -1
+        if (dataset_id >= 0){
+          dread_id = H5Dread(dataset_id, H5T_NATIVE_DOUBLE,
+          H5S_ALL, H5S_ALL,
+          H5P_DEFAULT, dset_data)
+        }
+        if(dread_id<0)
+          logger.info("Dataset open error" + FILENAME)
+
+        dset_data
+	}
+	else{
+	 var dset_data = Array.ofDim[Double](1,1)
+	 logger.info("file empty"+FILENAME)
+	dset_data
+	}
+    }
 
     def readonep(FILENAME:String,DATASETNAME:String,start:Long,end1:Long):(Array[Array[Double]])= { 
         var logger = LoggerFactory.getLogger(getClass)
@@ -191,33 +243,99 @@ object read {
 
         dset_data
     }
-
-    def h5read (sc: SparkContext,inpath: String, variable: String, partitions: Long): RDD[DenseVector] = {
-	var dims:Array[Long]=getdims(inpath,variable)
-	var rows:Long=dims(0)	
-	var num_partitions: Long = partitions
-        if (rows < num_partitions) {
-                num_partitions = rows
+    
+    def getListOfFiles(dir: File, extensions: List[String]): List[File] = {
+    	dir.listFiles.filter(_.isFile).toList.filter { file =>
+        extensions.exists(file.getName.endsWith(_))
         }
-        val step: Long = rows / num_partitions
-        val arr = sc.range(0, rows, step, partitions.toInt).flatMap(x  => readonep(inpath, variable, x, x+step)).map{
-        	case a:Array[Double]=>
-        	new DenseVector(a)
-    	}
-        arr
+    }
+    
+    def h5read (sc: SparkContext,inpath: String, variable: String, partitions: Long):RDD[Array[Double]] = {
+        val file= new File(inpath)
+        var logger = LoggerFactory.getLogger(getClass)
+        if(file.exists && file.isFile){ //read single file
+          logger.info("Read Single file:"+inpath)
+          var dims:Array[Long]=getdims(inpath,variable)
+          var rows:Long=dims(0)
+          var num_partitions: Long = partitions
+          if (rows < num_partitions) {
+                num_partitions = rows
+          }
+          val step: Long = rows / num_partitions
+          val arr = sc.range(0, rows, step, partitions.toInt).flatMap(x  => readonep(inpath, variable, x, x+step))
+         arr
+        }
+        else{ //if(file.exists && file.isDirectory){ //read multiple file
+          val okext = List("h5","hdf5")
+          val listf = getListOfFiles(file,okext)
+          logger.info("Read"+listf.length+" files from directory:"+inpath)
+          val arr = sc.parallelize(listf,partitions.toInt).map(x=>x.toString).flatMap(x => readone(x,variable))
+         arr
+        }
     }
 
-    def h5read_irow (sc: SparkContext,inpath: String, variable: String, repartition: Long): RDD[IndexedRow] = {
-	var irow=h5read(sc,inpath,variable,repartition).zipWithIndex().map( k  => (k._1, k._2)).map(k => new IndexedRow(k._2, k._1))
+    def h5read_vec (sc: SparkContext,inpath: String, variable: String, partitions: Long):RDD[DenseVector] = {
+	var arr=h5read(sc,inpath,variable,partitions).map{
+		case a:	Array[Double]=>
+		new DenseVector(a)
+	  }
+	 arr  
+    }
+    def h5read_irow (sc: SparkContext,inpath: String, variable: String, partitions: Long): RDD[IndexedRow] = {
+	var irow=h5read_vec(sc,inpath,variable,partitions).zipWithIndex().map( k  => (k._1, k._2)).map(k => new IndexedRow(k._2, k._1))
 	irow
     }
-    def h5read_imat (sc: SparkContext,inpath: String, variable: String, repartition: Long): IndexedRowMatrix = {
-	var irow = h5read_irow(sc, inpath,variable, repartition)
+    def h5read_imat (sc: SparkContext,inpath: String, variable: String, partitions: Long): IndexedRowMatrix = {
+	var irow = h5read_irow(sc, inpath,variable, partitions)
 	val imat = new IndexedRowMatrix(irow)
         imat
     }
+/*
+   def write(outpath:String, variable:String, row:Array[Double],colid:Long)={
 
+	//Open file
+        try{
+                file_id = H5Fopen(outpath, H5F_ACC_RDONLY, H5P_DEFAULT)
+        }
+        catch{
+                case e: Exception=>  logger.info("\nFile open error,filename:" + FILENAME)
+        }
 
+        //Open dataset/variable
+        try{
+                dataset_id = H5Dopen(file_id,DATASETNAME, H5P_DEFAULT)
+        }
+        catch{
+                case e: Exception=> logger.info("\nDataset open error:" + DATASETNAME)
+        }
+
+        //Get dimension info
+        try{
+                dataspace_id =  H5Dget_space(dataset_id)
+                H5Sget_simple_extent_dims(dataspace_id, dset_dims,null)
+        }
+        catch{
+                case e: Exception=>logger.info("Dataspace open error,dataspace_id: "+dataspace_id)
+        }
+        if(dset_dims(0)>0&&dset_dims(1)>0){
+        var dset_data = Array.ofDim[Double](dset_dims(0).toInt,dset_dims(1).toInt)
+
+        var dread_id = -1
+        if (dataset_id >= 0){
+          dread_id = H5Dread(dataset_id, H5T_NATIVE_DOUBLE,
+          H5S_ALL, H5S_ALL,
+          H5P_DEFAULT, dset_data)
+        }
+        if(dread_id<0)
+          logger.info("Dataset open error" + FILENAME)
+	
+   }
+	
+   def h5write(sc: SparkContext,inpath: String, variable: String, partitions: Long) = {
+ 		
+   
+   }
+*/
 }
 
 

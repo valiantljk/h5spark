@@ -1,13 +1,15 @@
 #!/bin/bash
 
 
-#SBATCH -p debug
-#SBATCH -N 46
-#SBATCH -t 00:03:00
+#SBATCH -p regular
+#SBATCH -N 100
+#SBATCH -t 00:04:00
 #SBATCH -e mysparkjob_%j.err
 #SBATCH -o mysparkjob_%j.out
 #SBATCH --ccm
-#SBATCH --volume="/global/cscratch1/sd/jialin/spark_tmp_dir/climate:/tmp:perNodeCache=size=200G"
+##SBATCH --reservation=INC0082872
+#SBATCH --qos=premium
+##SBATCH --volume="/global/cscratch1/sd/jialin/spark_tmp_dir/climate:/tmp:perNodeCache=size=200G"
 module unload spark/hist-server
 module load spark
 module load collectl
@@ -19,29 +21,28 @@ start-all.sh
 # test the multiple hdf5 file reader:
 export SPARK_LOCAL_DIRS="/tmp"
 export LD_LIBRARY_PATH=$LD_LBRARY_PATH:$PWD/lib
+
 ###load single large hdf5 file####
-partition="1"
 repartition="3000"
-inputfile="/global/cscratch1/sd/jialin/climate/oceanTemps.hdf5"
-dataset="temperatures"
+#inputfile="/global/cscratch1/sd/jialin/climate/oceanTemps.hdf5"
+inputfile="/global/cscratch1/sd/jialin/dayabay/ost1/oceanTemps.hdf5"
+#inputfile="/global/cscratch1/sd/jialin/dayabay/2016/data/2.h5"
+#inputfile = "/global/cscratch1/sd/gittens/large-climate-dataset/data/production/T.h5"
 #inputfile="/global/cscratch1/sd/jialin/dayabay/dayabay-final.h5"
+dataset="temperatures"
+#dataset="charge"
+#dataset="rows"
 #dataset="autoencoded"
-rows="6349676"
-type="64"
-csvlist="src/resources/hdf5/oceanlist.csv"
-#csvlist="src/resources/hdf5/oceanlist1.csv"
-#csvlist="src/resources/hdf5/oceanlist10.csv"
-#csvlist="src/resources/hdf5/dayabay-slice1.csv"
-#csvlist="src/resources/hdf5/scala-filelist"
-argsjava="/global/cscratch1/sd/jialin/climate/oceanTemps.hdf5,temperatures,4583256,4585372"
+
+
 
 spark-submit --verbose\
   --master $SPARKURL\
   --driver-memory 100G\
   --executor-cores 32 \
   --driver-cores 32  \
-  --num-executors=45 \
-  --executor-memory 100G\
+  --num-executors=99 \
+  --executor-memory 105G\
   --class org.nersc.io.readtest\
   --conf spark.eventLog.enabled=true\
   --conf spark.eventLog.dir=$SCRATCH/spark/spark_event_logs\

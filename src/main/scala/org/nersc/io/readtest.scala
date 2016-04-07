@@ -26,24 +26,24 @@ import org.apache.spark.mllib.linalg.DenseVector
 object readtest {
  def main(args: Array[String]): Unit = {
 
-   if(args.length <3) {
-	println("arguments less than 3")
+   if(args.length <4) {
+	println("Arguments less than 4")
 	System.exit(1);
     }
     var logger = LoggerFactory.getLogger(getClass)    
     var partition = args(0).toInt
     var input = args(1)
     var variable = args(2)
-    
-    val sparkConf = new SparkConf().setAppName("h5spark-scala")
+    var app_name = args(3) 
+    val sparkConf = new SparkConf().setAppName(app_name)
     val sc =new SparkContext(sparkConf)
 
     val rdd = read.h5read (sc,input,variable,partition)
     rdd.cache()
     val count= rdd.count()
     logger.info("\nRDD_Count: "+count+" , Total number of rows of all hdf5 files\n")
-    logger.info("\nRDD_First: ")
-    rdd.take(1)(0).toArray.foreach(println)
+    //logger.info("\nRDD_First: ")
+    //rdd.take(1)(0).toArray.foreach(println)
     sc.stop()
   }
 

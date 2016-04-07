@@ -10,7 +10,7 @@ import os
 
 # In[30]:
 
-def readH5(sc,file_list_or_txt_file,mode='multi', partitions=None):
+def h5read(sc,file_list_or_txt_file,mode='multi', partitions=None):
 	if mode == 'multi':
 		return readH5Multi(sc, file_list_or_txt_file, partitions)
 	elif mode == 'single':
@@ -51,9 +51,14 @@ def readH5SingleChunked(sc, filename_dataset_tuple, partitions):
 		.sortBy(lambda x: x, numPartitions=partitions)\
 		.flatMap(lambda x: readonepp(filename,dataset,x,step))
 	return rdd
+
+def h5read_irow(sc,file_list_or_txt_file, mode='multi', partitions=None):
+    rdd = h5read(sc, file_list_or_txt_file,mode, partitions)
+    indexed_rows = rdd.zipWithIndex().map(lambda (v,k): (k,v))
+    return indexed_rows
 	
-def h5ToIndexedRowMatrix(sc, file_list_or_txt_file, mode='multi', partitions=None):
-    rdd = readH5(sc, file_list_or_txt_file,mode, partitions)
+def h5read_imat(sc, file_list_or_txt_file, mode='multi', partitions=None):
+    rdd = h5read(sc, file_list_or_txt_file,mode, partitions)
     indexed_rows = rdd.zipWithIndex().map(lambda (v,k): (k,v))
     return IndexedRowMatrix(indexed_rows)
 

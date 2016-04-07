@@ -6,7 +6,7 @@ import read
 #read single large hdf5 file
 def test_h5sparkReadsingle():
     sc=SparkContext(appName="h5sparkread_python_singlefile")
-    rdd=read.readH5(sc,('/global/cscratch1/sd/jialin/climate/oceanTemps.hdf5','temperatures'),mode='single_chunked',partitions=3000) 
+    rdd=read.h5read(sc,('/global/cscratch1/sd/jialin/climate/oceanTemps.hdf5','temperatures'),mode='single_chunked',partitions=3000) 
     rdd.cache()
     print "rdd count:",rdd.count()
     sc.stop()

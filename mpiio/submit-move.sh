@@ -5,6 +5,7 @@
 #SBATCH -J h5move
 #SBATCH -e %j.err
 #SBATCH -o %j.out
+#SBATCH --qos=premium
 
 ##arguments: 
 ## -i: inputfilename, -o:outputfilename, -b: collective_buffersize, -n: collective_buffernodes, -k: iscollective, -v: datasetname

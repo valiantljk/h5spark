@@ -30,12 +30,16 @@ Then import it in python like so:
 3. then you have a few options to load the data
 4. the inputpath can be an absolute path of a single large HDF5 file, can also be a path to multiple small HDF5 files, e.g, a directory that contains millions of files
 
-** Load as an indexedmatrix: val tempmat = read.h5read_imat (sc,inputpath, variablename, partition)
+** Load as an array: val rdd = read.h5read (sc,inputpath, variablename, partition)
 
-** Load as an indexedrow: val tempmat = read.h5read_irow (sc,inputpath, variablename, partition)
+** Load as an indexedvector: val rdd = read.h5read_vec (sc,inputpath, variablename, partition)
 
-** Load as an array: val tempmat = read.h5read (sc,inputpath, variablename, partition)
+** Load as an indexedrow: val rdd = read.h5read_irow (sc,inputpath, variablename, partition)
 
-#Sample Batch Job Script on Cori
+** Load as an indexedmatrix: val rdd = read.h5read_imat (sc,inputpath, variablename, partition)
+
+
+
+#Sample Batch Job Script for testing on Cori
 1. Python version: sbatch spark-python.sh 
 2. Scala version: sbatch spark-scala.sh

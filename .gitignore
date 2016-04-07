@@ -1,7 +1,9 @@
-/project
 /target
 mysparkjob_*
 *.err
 *.out
 *.swp
 *.pyc
+*.csv
+/project/target
+

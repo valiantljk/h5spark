@@ -1,11 +1,10 @@
 # H5spark, 2016
-1. Supporting Hierarchical Data Format, HDF5/NetCDF4 and Rich Parallel I/O Interface in Spark
-2. Optimizing I/O Performance on Cray Machine with Lustre Filesystems
+1. Support Hierarchical Data Format, HDF5/NetCDF4 and Rich Parallel I/O Interface in Spark
+2. Optimize I/O Performance on HPC with Lustre Filesystems Tuning
 
-# Input and RDD Format
-1. For reading multiple files, Input is "A csv file that lists file path and variable name", e.g., src/resources/hdf5/scalafilelist
-2. For reading single file, Input is "A csv file that lists file path, variable name, and start, offset", e.g., src/resources/hdf5/
-3. Output is "A single RDD in which the element of RDD is one row in original file"
+# Input and Output RDD Format
+1. Input is a tuple of (pathname or filename, variablename, numpartitions)
+3. Output is "A single RDD in which the element of RDD is one row in its original file(s)"
 
 #Download and Compile H5Spark:
 1. git pull https://github.com/valiantljk/h5spark.git
@@ -13,11 +12,6 @@
 3. sbt package
 4. cp target/scala-2.10/h5spark_2.10-1.0.jar lib/
 5. cp -r lib/ your_project_dir/ (if you already have a lib directory, then just copy everything in h5spark/lib/* to your lib/)
-
-#Sample Batch Job Script on Cori
-1. Python version: sbatch spark-python.sh 
-2. Scala version: sbatch spark-scala.sh
-
 
 #Use in Your Pyspark Scripts:
 Add this to your python path:
@@ -28,7 +22,7 @@ Then import it in python like so:
 1. from h5spark import read
 2. from pyspark import SparkContext
 3. sc = SparkContext()
-4. rdd = read.readH5(sc,('path/to/h5file', 'dataset_name'))
+4. rdd = h5read(sc,file_list_or_txt_file,mode='multi', partitions=2000)
 
 #Use H5spark in your Scala Codes
 1. export LD_LIBRARY_PATH=$LD_LBRARY_PATH:your_project_dir/lib
@@ -42,4 +36,6 @@ Then import it in python like so:
 
 ** Load as an array: val tempmat = read.h5read (sc,inputpath, variablename, partition)
 
-
+#Sample Batch Job Script on Cori
+1. Python version: sbatch spark-python.sh 
+2. Scala version: sbatch spark-scala.sh

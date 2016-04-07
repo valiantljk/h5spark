@@ -6,4 +6,9 @@ mysparkjob_*
 *.pyc
 *.csv
 /project/target
+mpiio/h5move
+src/main/scala/org/nersc/io/test/'
+src/main/scala/org/nersc/io/test/hyperRead.java
+src/main/scala/org/nersc/io/test/test
+src/main/scala/org/nersc/io/test/test.h5
 

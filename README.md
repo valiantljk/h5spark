@@ -6,14 +6,14 @@
 1. Input is a tuple of (pathname or filename, variablename, numpartitions)
 3. Output is "A single RDD in which the element of RDD is one row in its original file(s)"
 
-#Download and Compile H5Spark:
+#Download and Compile H5Spark
 1. git pull https://github.com/valiantljk/h5spark.git
 2. cd h5spark
 3. sbt package
 4. cp target/scala-2.10/h5spark_2.10-1.0.jar lib/
 5. cp -r lib/ your_project_dir/ (if you already have a lib directory, then just copy everything in h5spark/lib/* to your lib/)
 
-#Use in Pyspark Scripts:
+#Use in Pyspark Scripts
 Add this to your python path:
 	export PYTHONPATH= path/to/h5spark/src/main/python/:$PYTHONPATH
 

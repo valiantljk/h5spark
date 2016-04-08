@@ -13,7 +13,7 @@
 4. cp target/scala-2.10/h5spark_2.10-1.0.jar lib/
 5. cp -r lib/ your_project_dir/ (if you already have a lib directory, then just copy everything in h5spark/lib/* to your lib/)
 
-#Use in Your Pyspark Scripts:
+#Use in Pyspark Scripts:
 Add this to your python path:
 	export PYTHONPATH= path/to/h5spark/src/main/python/:$PYTHONPATH
 
@@ -24,7 +24,7 @@ Then import it in python like so:
 3. sc = SparkContext()
 4. rdd = h5read(sc,file_list_or_txt_file,mode='multi', partitions=2000)
 
-#Use H5spark in your Scala Codes
+#Use in Scala Codes
 1. export LD_LIBRARY_PATH=$LD_LBRARY_PATH:your_project_dir/lib
 2. add these lines in your codes:   import org.nersc.io._
 3. then you have a few options to load the data

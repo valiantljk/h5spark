@@ -1,4 +1,4 @@
-#![picture alt](https://drive.google.com/open?id=0B6tjNswjwFIkUmI4QjhHRHNXckk), 2016
+#H5Spark, 2016
 1. Support Hierarchical Data Format, HDF5/NetCDF4 and Rich Parallel I/O Interface in Spark
 2. Optimize I/O Performance on HPC with Lustre Filesystems Tuning
 

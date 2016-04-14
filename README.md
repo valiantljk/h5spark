@@ -22,6 +22,8 @@ Then your python codes will be like so:
 
 ```
 from pyspark import SparkContext
+import os,sys
+import h5py
 import read
 
 def test_h5sparkReadsingle():
@@ -39,17 +41,17 @@ if __name__ == '__main__':
 2. cp h5spark/target/scala-2.10/h5spark_2.10-1.0.jar your_project_dir/lib/
 3. cp h5spark/lib/* your_project_dir/lib/
 4. Then in your codes, you can use it like:
-
+```
 import org.nersc.io._
 
 val rdd = read.h5read (sc,inputpath, variablename, partition)
 
-And you can have other rdd formats:
+//Or you can have other rdd formats:
 
-1. Load as an indexedvector: val rdd = read.h5read_vec (sc,inputpath, variablename, partition)
-2. Load as an indexedrow: val rdd = read.h5read_irow (sc,inputpath, variablename, partition)
-3. Load as an indexedmatrix: val rdd = read.h5read_imat (sc,inputpath, variablename, partition)
-
+val rdd = read.h5read_vec (sc,inputpath, variablename, partition) //Load as an indexedvector: 
+val rdd = read.h5read_irow (sc,inputpath, variablename, partition) //Load as an indexedrow: 
+val rdd = read.h5read_imat (sc,inputpath, variablename, partition) //Load as an indexedmatrix: 
+```
 
 #Sample Batch Job Script for testing on Cori
 1. Python version: sbatch spark-python.sh 

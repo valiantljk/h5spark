@@ -21,11 +21,11 @@ int main(int argc, char **argv){
   int c;
   opterr = 0;
   strncpy(filename, "./fake_xyz_default.h5", NAME_MAX);
-  strncpy(cb_buffer_size,"16777216", NAME_MAX);
-  strncpy(cb_nodes, "16", NAME_MAX);
+  //strncpy(cb_buffer_size,"16777216", NAME_MAX);
+  //strncpy(cb_nodes, "16", NAME_MAX);
   int col=1;//collective write
   //input args: f: inputfilename, b: collective_buffersize, n: collective_buffernodes, k:iscollective, v:datasetname   
-  while ((c = getopt (argc, argv, "f:b:n:k:v:")) != -1)
+  while ((c = getopt (argc, argv, "f:b:c:k:v:")) != -1)
     switch (c)
       {
       case 'f':
@@ -34,7 +34,7 @@ int main(int argc, char **argv){
       case 'b':
 	strncpy(cb_buffer_size,optarg, NAME_MAX);
 	break;
-      case 'n':
+      case 'c':
 	strncpy(cb_nodes, optarg, NAME_MAX);
 	break;
       case 'k':
@@ -46,8 +46,8 @@ int main(int argc, char **argv){
       }
 
   MPI_Info_create(&info); 
-  MPI_Info_set(info, "cb_buffer_size", cb_buffer_size);
-  MPI_Info_set(info, "cb_nodes", cb_nodes);
+  //MPI_Info_set(info, "cb_buffer_size", cb_buffer_size);
+  //MPI_Info_set(info, "cb_nodes", cb_nodes);
  
 
   //Open file/dataset
@@ -69,25 +69,11 @@ int main(int argc, char **argv){
   if(dataset <0 && mpi_rank==0) {printf("Data %s open error\n",DATASETNAME); return 0;}
   
  
-  hid_t datatype,dataspace;
-  H5T_class_t class;                 /* data type class */
-  H5T_order_t order;                 /* data order */
+  hid_t dataspace;
   size_t      size;                  /* size of data*/    
-  //hsize_t     dims_out[NDIMS];           /* dataset dimensions */ 
   int i, status_n,rank;
-  /* Get datatype and dataspace handles and then query
-       dataset class, order, size, rank and dimensions  */
-  datatype  = H5Dget_type(dataset);     /* datatype handle */ 
-  class     = H5Tget_class(datatype);
-  if (class == H5T_INTEGER && mpi_rank==0) printf("Data set has INTEGER type \n");
-  if (class == H5T_FLOAT && mpi_rank==0) printf("Data set has Float type \n");
-  order     = H5Tget_order(datatype);
-  if (order == H5T_ORDER_LE && mpi_rank==0) printf("Little endian order \n");
-  size  = H5Tget_size(datatype);
-  if(mpi_rank==0) printf("Data size is %d \n", size);
   dataspace = H5Dget_space(dataset);    /* dataspace handle */
   rank      = H5Sget_simple_extent_ndims(dataspace);
-  //if(rank!=NDIMS && mpi_rank==0) {printf("Dimension of dataset is not correct\n"); return 0;}
   hsize_t     dims_out[rank];
   status_n  = H5Sget_simple_extent_dims(dataspace, dims_out, NULL);
   if(mpi_rank==0){
@@ -114,28 +100,26 @@ int main(int argc, char **argv){
    offset[i] = 0;
    count[i] = dims_out[i];
   }
-  //specify the selection in the dataspace for each rank
-  H5Sselect_hyperslab(dataspace, H5S_SELECT_SET, offset, NULL, count, NULL);
 
+  //offset[1]=0;
+  //count[1]=dims_out[1];
+  //printf("start0 %d,count0 %d,start1 %d, count1 %d\n", offset[0], count[0],offset[1],count[1]);
+  //specify the selection in the dataspace for each rank
+  hid_t hyperid=H5Sselect_hyperslab(dataspace, H5S_SELECT_SET, offset, NULL, count, NULL);
+  if(mpi_rank==0&&hyperid<0){
+   printf("hyper error"); 
+  }
   hsize_t rankmemsize=1;
   hid_t memspace;
   for(i=0; i<rank; i++){  
    rankmemsize*=count[i];
   }
-
-  //memspace = H5Screate_simple(rank, dims_out, NULL);
-  //H5Sselect_hyperslab(memspace,H5S_SELECT_SET,offset,NULL,count,NULL);
-  memspace = H5Screate_simple(rank,count,NULL);
+ 
+ memspace = H5Screate_simple(rank,count,NULL);
   float totalsizegb=mpi_size * rankmemsize / 1024.0 / 1024.0 / 1024.0;
   //alloc buffer for each rank
-  void * data_t=NULL;
-  if(class == H5T_FLOAT){
-     if(size==4) data_t = (void *)malloc( rankmemsize * sizeof(float));
-     else if(size==8) data_t = (void *)malloc( rankmemsize * sizeof(double));
-  }
-  else if(class == H5T_INTEGER)
-    data_t = (void *)malloc( rankmemsize * sizeof(int)); 
-
+ //printf("mpisize %d, rankmemsize %d\n",mpi_size,rankmemsize); 
+   double * data_t=(double *)malloc(sizeof(double)*rankmemsize);
   if(data_t == NULL){
     printf("Memory allocation fails mpi_rank = %d",mpi_rank);
     for (i=0; i< rank; i++){
@@ -144,7 +128,8 @@ int main(int argc, char **argv){
     exit(1);
     return -1;
   }
- //memset(data_t, mpi_rank, dims_x * dims_y * my_z_size);
+ 
+  MPI_Barrier(comm);
   double t0 = MPI_Wtime();  
   if(mpi_rank == 0){
     if(col==1)
@@ -152,29 +137,27 @@ int main(int argc, char **argv){
     else 
     printf("IO: Independent Read\n");
   }
+  hid_t plist;
   if(col==1){
-   hid_t plist;
    plist = H5Pcreate(H5P_DATASET_XFER);
    H5Pset_dxpl_mpio(plist, H5FD_MPIO_COLLECTIVE);
-   if(class == H5T_INTEGER)
-    H5Dread(dataset, H5T_NATIVE_INT, memspace,dataspace, plist, data_t);
-   else if(class == H5T_FLOAT){
-    if(size==4) H5Dread(dataset, H5T_NATIVE_FLOAT, memspace,dataspace, plist, data_t);
-    else if(size==8) H5Dread(dataset, H5T_NATIVE_DOUBLE, memspace,dataspace, plist, data_t);
-   }
-   H5Pclose(plist);
+   H5Dread(dataset, H5T_NATIVE_DOUBLE, memspace,dataspace, plist, data_t);
+   //H5Pclose(plist);
   }
-  else{
-    if(class == H5T_INTEGER)
-     H5Dread(dataset, H5T_NATIVE_INT, memspace,dataspace, H5P_DEFAULT, data_t);
-    else if(class == H5T_FLOAT){
-     if(size==4) H5Dread(dataset, H5T_NATIVE_FLOAT, memspace, dataspace, H5P_DEFAULT, data_t);
-     else if(size==8) H5Dread(dataset, H5T_NATIVE_DOUBLE, memspace, dataspace, H5P_DEFAULT, data_t);
-    }
-  }
+  else
+   H5Dread(dataset, H5T_NATIVE_DOUBLE, memspace, dataspace, H5P_DEFAULT, data_t);
+  //printf("\n\n\ndata_t[0],%f\n\n\n",data_t[0]);  
+  MPI_Barrier(comm); 
+  H5D_mpio_actual_io_mode_t * actual_io_mode;
+  H5Pget_mpio_actual_io_mode(plist, actual_io_mode);
+  uint32_t * local_no_collective_cause=malloc(sizeof(uint32_t));
+  uint32_t * global_no_collective_cause=malloc(sizeof(uint32_t)); 
+  H5Pget_mpio_no_collective_cause( plist, local_no_collective_cause, global_no_collective_cause);
+ 
   double t1 = MPI_Wtime()-t0;
   if(mpi_rank==0 ||mpi_rank==mpi_size-1){
-  
+   printf("actual io mode:%s\n",actual_io_mode); 
+   printf("no collective io local cause %f, global cause %f\n",local_no_collective_cause, global_no_collective_cause);
    printf("\nRank %d, read time %.2fs\n",mpi_rank,t1);
    for(i=0; i<rank; i++){
     printf("Start_%d:%d Count_%d:%d\n",i,offset[i],i,count[i]);
@@ -182,8 +165,8 @@ int main(int argc, char **argv){
    printf("\n");
   }
   if(data_t!=NULL)
-   free(data_t);
-  H5Tclose(datatype);
+  free(data_t);
+  
   H5Sclose(dataspace);
   H5Sclose(memspace);
   H5Dclose(dataset);

@@ -2,8 +2,8 @@
 
 
 #SBATCH -p regular
-#SBATCH -N 46
-#SBATCH -t 00:06:00
+#SBATCH -N 5 
+#SBATCH -t 00:2:00
 #SBATCH -e mysparkjob_%j.err
 #SBATCH -o mysparkjob_%j.out
 #SBATCH --ccm
@@ -19,20 +19,25 @@ start-all.sh
 # to create a fat jar
 # sbt assembly
 # test the multiple hdf5 file reader:
-export SPARK_LOCAL_DIRS="/tmp"
+#export SPARK_LOCAL_DIRS="/tmp"
 export LD_LIBRARY_PATH=$LD_LBRARY_PATH:$PWD/lib
 
 ###load single large hdf5 file####
-repartition="3000"
+repartition="100"
 #inputfile="/global/cscratch1/sd/jialin/climate/oceanTemps.hdf5"
-inputfile="/global/cscratch1/sd/jialin/dayabay/ost24/oceanTemps.hdf5"
-#app_name="dayabay/2016/data-multif-scala"
-app_name="ost24/oceanTemps.hdf5-scala"
-#inputfile="/global/cscratch1/sd/jialin/dayabay/2016/data/"
+#inputfile="/global/cscratch1/sd/jialin/dayabay/ost24/oceanTemps.hdf5"
+inputfile="/global/cscratch1/sd/jialin/dayabay/2016/sci-h5spark/five.h5"
+#app_name="dayabay/2016/data-singlef-scala/"
+#app_name="dayabay/ost8/multi-medium-multif-scala/"
+#app_name="ost24/oceanTemps.hdf5-h5spark"
+#app_name="ost24/oceanTemps.hdf5-2000par-cache"
+app_name="H5SsparkTest-five11"
+#inputfile="/global/cscratch1/sd/jialin/dayabay/ost72/"
+#inputfile="/global/cscratch1/sd/jialin/dayabay/ost8/multi-medium"
 #inputfile = "/global/cscratch1/sd/gittens/large-climate-dataset/data/production/T.h5"
 #inputfile="/global/cscratch1/sd/jialin/dayabay/dayabay-final.h5"
-dataset="temperatures"
-#dataset="charge"
+#dataset="temperatures"
+dataset="charge"
 #dataset="rows"
 #dataset="autoencoded"
 func="array"
@@ -44,7 +49,7 @@ spark-submit --verbose\
   --driver-memory 100G\
   --executor-cores 32 \
   --driver-cores 32  \
-  --num-executors=45 \
+  --num-executors=4 \
   --executor-memory 105G\
   --class org.nersc.io.readtest\
   --conf spark.eventLog.enabled=true\

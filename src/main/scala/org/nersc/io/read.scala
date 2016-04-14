@@ -107,6 +107,7 @@ object read {
                 case e@ ( _: HDF5LibraryException | _: HDF5Exception) =>
                         logger.info("Error from HDF5 library|Failure in the data conversion. Read error info: "+
                         e.getMessage+e.printStackTrace)
+		case e: java.lang.NegativeArraySizeException=>logger.info("emptyjavaarray"+e.getMessage+e.printStackTrace+FILENAME) 
         }
         if(dread_id<0)
           logger.info("Dataset open error" + FILENAME)

@@ -20,7 +20,7 @@ export PYTHONPATH=$PYTHONPATH:path_to_h5spark/src/main/python/h5spark
 
 Then your python codes will be like so:
 
-
+'''
 1. from pyspark import SparkContext
 2. import read
 3. def test_h5sparkReadsingle():
@@ -29,7 +29,7 @@ Then your python codes will be like so:
 6.     rdd.cache()
 7.     print "rdd count:",rdd.count()
 8.     sc.stop()
-
+'''
 #Use in Scala Codes
 1. export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:your_project_dir/lib
 2. cp h5spark/target/scala-2.10/h5spark_2.10-1.0.jar your_project_dir/lib/

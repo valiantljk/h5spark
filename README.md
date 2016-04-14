@@ -26,7 +26,7 @@ Then import it in python like so:
 4. read.h5read(sc,('oceanTemps.h5','temperatures'),mode='single',partitions=100)
 
 #Use in Scala Codes
-1. export LD_LIBRARY_PATH=$LD_LBRARY_PATH:your_project_dir/lib
+1. export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:your_project_dir/lib
 2. cp h5spark/target/scala-2.10/h5spark_2.10-1.0.jar your_project_dir/lib/
 3. cp h5spark/lib/* your_project_dir/lib/
 4. add these lines in your codes:   import org.nersc.io._

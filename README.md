@@ -29,15 +29,17 @@ Then import it in python like so:
 1. export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:your_project_dir/lib
 2. cp h5spark/target/scala-2.10/h5spark_2.10-1.0.jar your_project_dir/lib/
 3. cp h5spark/lib/* your_project_dir/lib/
-4. add these lines in your codes:   import org.nersc.io._
+4. Then in your codes, you can use it like:
 
-** Load as an array: val rdd = read.h5read (sc,inputpath, variablename, partition)
+import org.nersc.io._
 
-** Load as an indexedvector: val rdd = read.h5read_vec (sc,inputpath, variablename, partition)
+val rdd = read.h5read (sc,inputpath, variablename, partition)
 
-** Load as an indexedrow: val rdd = read.h5read_irow (sc,inputpath, variablename, partition)
+And you can have other rdd formats:
 
-** Load as an indexedmatrix: val rdd = read.h5read_imat (sc,inputpath, variablename, partition)
+1. Load as an indexedvector: val rdd = read.h5read_vec (sc,inputpath, variablename, partition)
+2. Load as an indexedrow: val rdd = read.h5read_irow (sc,inputpath, variablename, partition)
+3. Load as an indexedmatrix: val rdd = read.h5read_imat (sc,inputpath, variablename, partition)
 
 
 #Sample Batch Job Script for testing on Cori

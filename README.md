@@ -3,8 +3,8 @@
 2. Optimize I/O Performance on HPC with Lustre Filesystems Tuning
 
 # Input and Output
-1. Input is a tuple of (pathname or filename, variablename, numpartitions)
-3. Output is "A single RDD in which the element of RDD is one row in its original file(s)"
+1. Input is a HDF5 file
+3. Output is a RDD object
 
 #Download and Compile H5Spark
 1. git pull https://github.com/valiantljk/h5spark.git

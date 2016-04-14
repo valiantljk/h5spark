@@ -21,7 +21,7 @@ Then import it in python like so:
 1. from pyspark import SparkContext
 2. import read
 3. sc = SparkContext(appName="h5sparktest")
-4. read.h5read(sc,('oceanTemps.hdf5','temperatures'),mode='single',partitions=100)
+4. read.h5read(sc,('oceanTemps.h5','temperatures'),mode='single',partitions=100)
 
 #Use in Scala Codes
 1. export LD_LIBRARY_PATH=$LD_LBRARY_PATH:your_project_dir/lib

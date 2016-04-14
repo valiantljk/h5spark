@@ -48,11 +48,8 @@ import org.nersc.io._
 object readtest {
  def main(args: Array[String]): Unit = {
     var logger = LoggerFactory.getLogger(getClass)
-    var partition = args(0).toInt
-    var input = args(1)
-    var variable = args(2)
     val sc = new SparkContext()
-    val rdd = read.h5read (sc,input,variable,partition)
+    val rdd = read.h5read (sc,"oceanTemps.h5","temperatures", 3000)
     rdd.cache()
     val count= rdd.count()
     logger.info("\nRDD_Count: "+count+" , Total number of rows of all hdf5 files\n")

@@ -7,7 +7,7 @@
 3. Output is a RDD object
 
 #Download and Compile H5Spark
-1. git pull https://github.com/valiantljk/h5spark.git
+1. git clone https://github.com/valiantljk/h5spark.git
 2. cd h5spark
 3. module load sbt (if on NERSC's machine,otherwise, you need to install sbt first)
 4. sbt package

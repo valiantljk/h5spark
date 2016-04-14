@@ -70,7 +70,8 @@ val rdd = read.h5read_imat (sc,inputpath, variablename, partition) //Load as an 
 
 #Sample Batch Job Script on Cori
 If you have an NERSC account(email consult@nersc.gov to get one), you can try with the batch scripts:
-1. Python version: sbatch spark-python.sh 
+
+1. Python version: sbatch spark-python.sh
 2. Scala version: sbatch spark-scala.sh
 
 #Questions and Support

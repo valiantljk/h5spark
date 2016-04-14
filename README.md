@@ -18,12 +18,17 @@ Add the h5spark path to your python path:
 
 export PYTHONPATH=$PYTHONPATH:path_to_h5spark/src/main/python/h5spark
 
-Then import it in python like so:
+Then your python codes will be like so:
+
 
 1. from pyspark import SparkContext
 2. import read
-3. sc = SparkContext(appName="h5sparktest")
-4. read.h5read(sc,('oceanTemps.h5','temperatures'),mode='single',partitions=100)
+3. def test_h5sparkReadsingle():
+4.     sc = SparkContext(appName="h5sparktest")
+5.     rdd=read.h5read(sc,('oceanTemps.h5','temperatures'),mode='single',partitions=100)
+6.     rdd.cache()
+7.     print "rdd count:",rdd.count()
+8.     sc.stop()
 
 #Use in Scala Codes
 1. export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:your_project_dir/lib

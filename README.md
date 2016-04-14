@@ -13,8 +13,9 @@
 
 
 #Use in Pyspark Scripts
+
 Add this to your python path:
-	export PYTHONPATH= path/to/h5spark/src/main/python/:$PYTHONPATH
+export PYTHONPATH=$PYTHONPATH:path_to_h5spark/src/main/python/h5spark
 
 Then import it in python like so:
 

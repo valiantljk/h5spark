@@ -44,10 +44,25 @@ if __name__ == '__main__':
 ```
 import org.nersc.io._
 
-val rdd = read.h5read (sc,inputpath, variablename, partition)
+object readtest {
+ def main(args: Array[String]): Unit = {
+    var logger = LoggerFactory.getLogger(getClass)
+    var partition = args(0).toInt
+    var input = args(1)
+    var variable = args(2)
+    val sc = new SparkContext()
+    val rdd = read.h5read (sc,input,variable,partition)
+    rdd.cache()
+    val count= rdd.count()
+    logger.info("\nRDD_Count: "+count+" , Total number of rows of all hdf5 files\n")
+    sc.stop()
+  }
 
-//Or you can have other rdd formats:
+}
+```
 
+You can also load the HDF5 data into other RDD formats, e.g., 
+```
 val rdd = read.h5read_vec (sc,inputpath, variablename, partition) //Load as an indexedvector: 
 val rdd = read.h5read_irow (sc,inputpath, variablename, partition) //Load as an indexedrow: 
 val rdd = read.h5read_imat (sc,inputpath, variablename, partition) //Load as an indexedmatrix: 

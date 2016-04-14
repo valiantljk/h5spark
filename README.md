@@ -72,3 +72,10 @@ val rdd = read.h5read_imat (sc,inputpath, variablename, partition) //Load as an 
 If you have an NERSC account(email consult@nersc.gov to get one), you can try with the batch scripts:
 1. Python version: sbatch spark-python.sh 
 2. Scala version: sbatch spark-scala.sh
+
+#Questions and Support
+1. If you are using NERSC's machine, please feel free to email consult@nersc.gov 
+2. If not, you can send your questions to jalnliu@lbl.gov
+
+#Citation
+J.L. Liu, E. Racah, Q. Koziol, R. S. Canon, A. Gittens, L. Gerhardt, S. Byna, M. F. Ringenburg, Prabhat. "H5Spark: Bridging the I/O Gap between Spark and Scientific Data Formats on HPC Systems", Cray User Group, 2016, (paper available in May 2016)

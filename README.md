@@ -18,6 +18,7 @@ Add this to your python path:
 export PYTHONPATH=$PYTHONPATH:path_to_h5spark/src/main/python/h5spark
 
 Then import it in python like so:
+
 1. from pyspark import SparkContext
 2. import read
 3. sc = SparkContext(appName="h5sparktest")

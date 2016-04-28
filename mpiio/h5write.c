@@ -27,7 +27,7 @@ int main(int argc, char **argv){
 
   int c;
   opterr = 0;
-  strncpy(filename, "./fake_xyz_default.h5", NAME_MAX);
+  strncpy(filename, "./test.h5", NAME_MAX);
   strncpy(cb_buffer_size,"16777216", NAME_MAX);
   strncpy(cb_nodes, "16", NAME_MAX);
   dims_x = 2000;

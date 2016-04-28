@@ -147,21 +147,20 @@ int main(int argc, char **argv){
   else
    H5Dread(dataset, H5T_NATIVE_DOUBLE, memspace, dataspace, H5P_DEFAULT, data_t);
   //printf("\n\n\ndata_t[0],%f\n\n\n",data_t[0]);  
-  MPI_Barrier(comm); 
-  H5D_mpio_actual_io_mode_t * actual_io_mode;
-  H5Pget_mpio_actual_io_mode(plist, actual_io_mode);
-  uint32_t * local_no_collective_cause=malloc(sizeof(uint32_t));
-  uint32_t * global_no_collective_cause=malloc(sizeof(uint32_t)); 
-  H5Pget_mpio_no_collective_cause( plist, local_no_collective_cause, global_no_collective_cause);
- 
+  MPI_Barrier(comm);
   double t1 = MPI_Wtime()-t0;
-  if(mpi_rank==0 ||mpi_rank==mpi_size-1){
-   printf("actual io mode:%s\n",actual_io_mode); 
-   printf("no collective io local cause %f, global cause %f\n",local_no_collective_cause, global_no_collective_cause);
-   printf("\nRank %d, read time %.2fs\n",mpi_rank,t1);
-   for(i=0; i<rank; i++){
-    printf("Start_%d:%d Count_%d:%d\n",i,offset[i],i,count[i]);
-   }
+  if(mpi_rank==0||mpi_rank==mpi_size-1){ 
+  //H5D_mpio_actual_io_mode_t * actual_io_mode;
+  //H5Pget_mpio_actual_io_mode(plist, actual_io_mode);
+  //uint32_t * local_no_collective_cause=malloc(sizeof(uint32_t));
+  //uint32_t * global_no_collective_cause=malloc(sizeof(uint32_t)); 
+  //H5Pget_mpio_no_collective_cause( plist, local_no_collective_cause, global_no_collective_cause);
+  //printf("actual io mode:%s\n",actual_io_mode); 
+  //printf("no collective io local cause %f, global cause %f\n",local_no_collective_cause, global_no_collective_cause);
+  printf("\nRank %d, read time %.2fs\n",mpi_rank,t1);
+  for(i=0; i<rank; i++){
+    printf("Start_%d: %d, Count_%d: %d\n",i,offset[i],i,count[i]);
+  }
    printf("\n");
   }
   if(data_t!=NULL)

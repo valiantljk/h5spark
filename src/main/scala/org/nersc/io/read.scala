@@ -198,6 +198,14 @@ object read {
 
         dset_data
     }
+
+    def readonep_order(FILENAME:String,DATASETNAME:String,start:Long,end1:Long):(Array[Array[Double]],Array[Long])= {
+	       
+        var dset_data=readonep(FILENAME,DATASETNAME,start,end1)
+	var index:Array[Long]=Array[Long](start,end1)
+
+	(dset_data,index)
+    }
     
     def getListOfFiles(dir: File, extensions: List[String]): List[File] = {
     	dir.listFiles.filter(_.isFile).toList.filter { file =>

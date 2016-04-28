@@ -7,9 +7,10 @@
 3. Output is a RDD object
 
 #Download and Compile H5Spark
-1. git pull https://github.com/valiantljk/h5spark.git
+1. git clone https://github.com/valiantljk/h5spark.git
 2. cd h5spark
-3. sbt package
+3. module load sbt (if on NERSC's machine, if not, please install sbt first)
+4. sbt package
 
 
 #Use in Pyspark Scripts
@@ -47,11 +48,8 @@ import org.nersc.io._
 object readtest {
  def main(args: Array[String]): Unit = {
     var logger = LoggerFactory.getLogger(getClass)
-    var partition = args(0).toInt
-    var input = args(1)
-    var variable = args(2)
     val sc = new SparkContext()
-    val rdd = read.h5read (sc,input,variable,partition)
+    val rdd = read.h5read (sc,"oceanTemps.h5","temperatures", 3000)
     rdd.cache()
     val count= rdd.count()
     logger.info("\nRDD_Count: "+count+" , Total number of rows of all hdf5 files\n")

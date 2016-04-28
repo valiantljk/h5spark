@@ -27,33 +27,35 @@ import org.apache.spark.mllib.linalg.DenseVector
 import org.apache.spark.SparkContext
 
 object read {
-  private def getdimentions(file:String, variable:String):Array[Long]={
+  private def getdimentions(file: String, variable: String): Array[Long] = {
     val logger = LoggerFactory.getLogger(getClass)
     var file_id = -2
     var dataset_id = -2
-	  var dataspace_id = -2
-    try{
+    var dataspace_id = -2
+    try {
       file_id = H5Fopen(file, H5F_ACC_RDONLY, H5P_DEFAULT)
-		  dataset_id = H5Dopen(file_id,variable, H5P_DEFAULT)
+      dataset_id = H5Dopen(file_id, variable, H5P_DEFAULT)
     }
     catch {
       case e: Exception => logger.info("\nFile error: " + file)
     }
-    dataspace_id =  H5Dget_space(dataset_id)
-    val ranks=H5Sget_simple_extent_ndims(dataspace_id)
+    dataspace_id = H5Dget_space(dataset_id)
+    val ranks = H5Sget_simple_extent_ndims(dataspace_id)
     val dset_dims = new Array[Long](ranks)
-    H5Sget_simple_extent_dims(dataspace_id, dset_dims,null)
-        
-	  H5Sclose(dataspace_id)
-	  H5Dclose(dataset_id)
+    H5Sget_simple_extent_dims(dataspace_id, dset_dims, null)
+
+    H5Sclose(dataspace_id)
+    H5Dclose(dataset_id)
     H5Fclose(file_id)
     dset_dims
   }
+
   private def getListOfFiles(dir: File, extensions: List[String]): List[File] = {
     dir.listFiles.filter(_.isFile).toList.filter { file =>
       extensions.exists(file.getName.endsWith(_))
     }
   }
+
   private def read_whole_dataset(FILENAME: String, DATASETNAME: String): (Array[Array[Double]]) = {
     val logger = LoggerFactory.getLogger(getClass)
     var file_id = -2
@@ -109,13 +111,14 @@ object read {
       dset_data
     }
   }
-  private def read_hyperslab(FILENAME: String, DATASETNAME: String, start: Long, end: Long): (Array[Double], Array[Int]) ={
+
+  private def read_hyperslab(FILENAME: String, DATASETNAME: String, start: Long, end: Long): (Array[Double], Array[Int]) = {
     val logger = LoggerFactory.getLogger(getClass)
     var file_id = -2
     var dataset_id = -2
     var dataspace_id = -2
     var ranks: Int = 2
-    var end1=end
+    var end1 = end
     /*Open an existing file*/
     try {
       file_id = H5Fopen(FILENAME, H5F_ACC_RDONLY, H5P_DEFAULT)
@@ -144,10 +147,10 @@ object read {
     //Adjust last access
     if (end1 > dset_dims(0))
       end1 = dset_dims(0)
-    val step=end1-start
-    var subset_length:Long = 1
+    val step = end1 - start
+    var subset_length: Long = 1
     for (i <- 1 to ranks) {
-      subset_length*=dset_dims(i)
+      subset_length *= dset_dims(i)
     }
 
     val dset_datas = Array.ofDim[Double](step.toInt * subset_length.toInt)
@@ -156,7 +159,7 @@ object read {
     val count_dims: Array[Long] = new Array[Long](ranks)
     start_dims(0) = start.toLong
     count_dims(0) = step.toLong
-    for(i<-1 to ranks) {
+    for (i <- 1 to ranks) {
       start_dims(i) = 0.toLong
       count_dims(i) = dset_dims(i)
     }
@@ -176,21 +179,21 @@ object read {
       case e@(_: HDF5LibraryException | _: HDF5Exception) =>
         logger.info("Error from HDF5 library|Failure in the data conversion. Read error info: " + e.getMessage + e.printStackTrace)
     }
-    var global_start = (start-1) * subset_length
-    if (global_start<0) global_start=0
+    var global_start = (start - 1) * subset_length
+    if (global_start < 0) global_start = 0
     var global_end = end1 * subset_length
     import Array._
-    val index: Array[Int] = range(global_start.toInt, global_end.toInt,1)
+    val index: Array[Int] = range(global_start.toInt, global_end.toInt, 1)
     (dset_datas, index)
   }
-  
+
   private def read_array(FILENAME: String, DATASETNAME: String, start: Long, end: Long): (Array[Array[Double]]) = {
     val dset_dims: Array[Long] = getdimentions(FILENAME, DATASETNAME)
-    var (dset_datas:Array[Double],index:Array[Int])=read_hyperslab(FILENAME, DATASETNAME, start, end)
-    var dset_data:Array[Array[Double]]=Array.ofDim((end-start).toInt,(index(-1)-index(0)))
-    var end1=end
-    if(end1>dset_dims(1))
-      end1=dset_dims(1)
+    var (dset_datas: Array[Double], index: Array[Int]) = read_hyperslab(FILENAME, DATASETNAME, start, end)
+    var dset_data: Array[Array[Double]] = Array.ofDim((end - start).toInt, (index(-1) - index(0)))
+    var end1 = end
+    if (end1 > dset_dims(1))
+      end1 = dset_dims(1)
     for (id <- 0 to (end1 - start).toInt - 1) {
       for (jd <- 0 to dset_dims(1).toInt - 1) {
         dset_data(id)(jd) = dset_datas(id * dset_dims(1).toInt + jd)
@@ -198,7 +201,104 @@ object read {
     }
     dset_data
   }
-  
+
+
+  //  global_array_dims=3
+  //  global_array_size=[1000. 1000. 1000]
+  //  #
+  //  #
+  //  # Direction viewed from top-down (z)
+  //  #      1
+  //  #  2   5(0, 6)    4
+  //  #      3
+  //  # (0)  is myselft
+  //  # (5)  is the one above me
+  //  # (6)  is the one below conrrent
+  //move_direction =[0, 1, 2, 3, 4, 5, 6]
+
+  def rowmajor_l_reverse(index: Int): Array[Int] ={
+    //convert index to 3D coordinate
+    var global_array_dims = 3
+    var indexi=index
+    var global_array_size= Array(1000,1000,1000)
+    var coordinate = new Array[Int](3)
+    for (i <- Range(0,global_array_dims).reverse ){
+      coordinate:+ (indexi % global_array_size(i))
+      indexi = indexi / global_array_size(i)
+    }
+    coordinate
+  }
+
+  def rowmajor_l(coordinate:Array[Int]): Int= {
+    //linear coordinate
+    var box_id = coordinate(0)
+    var global_array_size= Array(1000,1000,1000)
+    for (i <- Range(1, coordinate.length - 1)) {
+      box_id = box_id * global_array_size(i) + coordinate(i)
+    }
+    box_id
+  }
+  def move_coordinate(coordinate: Array[Int], direction: Int):Array[Int] = {
+    var new_coordinate = coordinate
+    var global_array_size= Array(1000,1000,1000)
+    if (direction != 0){
+      if (direction != 1){
+        if (new_coordinate(0) - 1 >= 0){
+          new_coordinate(0) = new_coordinate(0) - 1
+        }else{
+          new_coordinate(0) = 0
+        }
+      }else if (direction != 2){
+        if (new_coordinate(1) - 1 >= 0){
+          new_coordinate(1) = new_coordinate(1) - 1
+        }else{
+          new_coordinate(1) = 0
+        }
+      }else if (direction != 3){
+        if (new_coordinate(0) + 1 > global_array_size(0)){
+          new_coordinate(0) = global_array_size(0)
+        }else{
+          new_coordinate(0) = new_coordinate(0) + 1
+        }
+      }else if (direction != 4){
+        if(new_coordinate(1) + 1 > global_array_size(1)){
+          new_coordinate(1) = global_array_size(1)
+        }else{
+          new_coordinate(1) = new_coordinate(1) + 1
+        }
+      }else if (direction != 5){
+        if (new_coordinate(2) + 1 > global_array_size(2)){
+          new_coordinate(2) = global_array_size(2)
+        }else{
+          new_coordinate(2) = new_coordinate(2) + 1
+        }
+      }else if (direction != 6){
+        if (new_coordinate(2) - 1 >= 0){
+          new_coordinate(2) = new_coordinate(2) - 1
+        }else{
+          new_coordinate(2) = 0
+        }
+      }else{
+        print("Un-defined direction")
+      }
+    }
+    new_coordinate
+  }
+
+  def maper3D(V:Double,K:Int): (Int, Double)= {
+    //KV[0]: value#KV[1]: index
+    var move_direction = Array(0, 1, 2, 3, 4, 5, 6)
+    var coordinate = rowmajor_l_reverse (K)
+    var box_id:Int= 1
+
+    for (i<- Range(0, move_direction.length ) ){
+      var new_coordinate = move_coordinate(coordinate, move_direction(i))
+      // Use the lineried offset as id
+      box_id = rowmajor_l(new_coordinate)
+    }
+    (box_id,V)
+  }
+
   def h5read_point(sc:SparkContext, inpath: String, variable: String, partitions: Long): RDD[(Double,Int)] = {
     val file = new File(inpath)
     val logger = LoggerFactory.getLogger(getClass)

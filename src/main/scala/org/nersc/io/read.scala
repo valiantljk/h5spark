@@ -183,6 +183,7 @@ object read {
     val index: Array[Int] = range(global_start.toInt, global_end.toInt,1)
     (dset_datas, index)
   }
+  
   private def read_array(FILENAME: String, DATASETNAME: String, start: Long, end: Long): (Array[Array[Double]]) = {
     val dset_dims: Array[Long] = getdimentions(FILENAME, DATASETNAME)
     var (dset_datas:Array[Double],index:Array[Int])=read_hyperslab(FILENAME, DATASETNAME, start, end)

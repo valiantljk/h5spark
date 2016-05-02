@@ -46,7 +46,7 @@ object readtest {
     //val rdd = read.h5read (sc,input,variable,partition)
     rdd.cache()
     //val count= rdd.count()
-     rdd.take(1).foreach(println)
+     rdd.take(100).foreach(println)
     //logger.info("\nRDD_Count: "+count+" , Total number of rows of all hdf5 files\n")
     //logger.info("\nRDD_First: ")
     //rdd.take(1)(0).toArray.foreach(println)

@@ -1,13 +1,13 @@
 #!/bin/bash
 
 
-#SBATCH -p regular
-#SBATCH -N 46 
+#SBATCH -p debug
+#SBATCH -N 6
 #SBATCH -t 00:05:00
 #SBATCH -e mysparkjob_%j.err
 #SBATCH -o mysparkjob_%j.out
 #SBATCH --ccm
-#SBATCH --qos=premium
+##SBATCH --qos=premium
 #module unload spark/hist-server
 module load spark
 #module load collectl
@@ -17,10 +17,10 @@ start-all.sh
 export LD_LIBRARY_PATH=$LD_LBRARY_PATH:$PWD/lib
 
 ###load single large hdf5 file####
-repartition="2880"
-inputfile="/global/cscratch1/sd/jialin/dayabay/ost248/oceanTemps.hdf5"
-app_name="H5Sspark-mpi-ost248"
-dataset="temperatures"
+repartition="200"
+inputfile="/global/cscratch1/sd/jialin/udf/bx_22860.h5p"
+app_name="H5Sspark-udf"
+dataset="bx"
 
 spark-submit --verbose\
   --master $SPARKURL\
@@ -28,7 +28,7 @@ spark-submit --verbose\
   --driver-memory 100G\
   --executor-cores 32 \
   --driver-cores 32  \
-  --num-executors=45 \
+  --num-executors=5 \
   --executor-memory 105G\
   --class org.nersc.io.readtest\
   --conf spark.eventLog.enabled=true\

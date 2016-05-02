@@ -149,8 +149,11 @@ object read {
       end1 = dset_dims(0)
     val step = end1 - start
     var subset_length: Long = 1
-    for (i <- 1 to ranks) {
+    logger.info("Ranks="+ranks)
+    logger.info("Dim 0="+dset_dims(0))
+    for (i <- 1 to ranks-1) {
       subset_length *= dset_dims(i)
+      logger.info("Dim "+i+"="+dset_dims(i))
     }
 
     val dset_datas = Array.ofDim[Double](step.toInt * subset_length.toInt)
@@ -159,7 +162,7 @@ object read {
     val count_dims: Array[Long] = new Array[Long](ranks)
     start_dims(0) = start.toLong
     count_dims(0) = step.toLong
-    for (i <- 1 to ranks) {
+    for (i <- 1 to ranks-1) {
       start_dims(i) = 0.toLong
       count_dims(i) = dset_dims(i)
     }
@@ -220,7 +223,7 @@ object read {
     //convert index to 3D coordinate
     var global_array_dims = 3
     var indexi=index
-    var global_array_size= Array(1000,1000,1000)
+    var global_array_size= Array(2000,2000,800)
     var coordinate = new Array[Int](3)
     for (i <- Range(0,global_array_dims).reverse ){
       coordinate:+ (indexi % global_array_size(i))
@@ -232,7 +235,7 @@ object read {
   def rowmajor_l(coordinate:Array[Int]): Int= {
     //linear coordinate
     var box_id = coordinate(0)
-    var global_array_size= Array(1000,1000,1000)
+    var global_array_size= Array(2000,2000,800)
     for (i <- Range(1, coordinate.length - 1)) {
       box_id = box_id * global_array_size(i) + coordinate(i)
     }
@@ -240,7 +243,7 @@ object read {
   }
   def move_coordinate(coordinate: Array[Int], direction: Int):Array[Int] = {
     var new_coordinate = coordinate
-    var global_array_size= Array(1000,1000,1000)
+    var global_array_size= Array(2000,2000,800)
     if (direction != 0){
       if (direction != 1){
         if (new_coordinate(0) - 1 >= 0){
@@ -285,8 +288,7 @@ object read {
     new_coordinate
   }
 
-  def maper3D(V:Double,K:Int): (Int, Double)= {
-    //KV[0]: value#KV[1]: index
+  def maper3D(V:Double,K:Int): (Int, Double)= { 
     var move_direction = Array(0, 1, 2, 3, 4, 5, 6)
     var coordinate = rowmajor_l_reverse (K)
     var box_id:Int= 1

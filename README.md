@@ -77,4 +77,5 @@ If you have an NERSC account(email consult@nersc.gov to get one), you can try wi
 2. If not, you can send your questions to jalnliu@lbl.gov
 
 #Citation
-J.L. Liu, E. Racah, Q. Koziol, R. S. Canon, A. Gittens, L. Gerhardt, S. Byna, M. F. Ringenburg, Prabhat. "H5Spark: Bridging the I/O Gap between Spark and Scientific Data Formats on HPC Systems", Cray User Group, 2016, (paper available in May 2016)
+J.L. Liu, E. Racah, Q. Koziol, R. S. Canon, A. Gittens, L. Gerhardt, S. Byna, M. F. Ringenburg, Prabhat. "H5Spark: Bridging the I/O Gap between Spark and Scientific Data Formats on HPC Systems", Cray User Group, 2016, ([Paper](https://github.com/valiantljk/h5spark/files/261834/h5spark-cug16-final.pdf)
+[Slides](https://github.com/valiantljk/h5spark/files/261837/h5spark-2016-cug.pdf))

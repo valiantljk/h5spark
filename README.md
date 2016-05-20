@@ -81,3 +81,6 @@ J.L. Liu, E. Racah, Q. Koziol, R. S. Canon, A. Gittens, L. Gerhardt, S. Byna, M.
 [Slides](https://github.com/valiantljk/h5spark/files/261837/h5spark-2016-cug.pdf)
 [bib](https://github.com/valiantljk/h5spark/files/261861/h5spark.bib.txt))
 
+#Highlight
+1. Tested at full scale on Cori phase 1, with 1600 nodes, 51200 cores. H5Spark took 2 minutes to load 16 TBs HDF5 2D data
+2. H5Spark takes 35 seconds in loading 2 TB data, while MPI uses 15 seconds. 

@@ -18,9 +18,9 @@ export LD_LIBRARY_PATH=$LD_LBRARY_PATH:$PWD/lib
 
 ###load single large hdf5 file####
 repartition="200"
-inputfile="/global/cscratch1/sd/jialin/udf/bx_22860.h5p"
+inputfile="/global/cscratch1/sd/jialin/io-ticket/udf-dbin/fake-2d-tiny.h5p"
 app_name="H5Sspark-udf"
-dataset="bx"
+dataset="/testg/testd"
 
 spark-submit --verbose\
   --master $SPARKURL\

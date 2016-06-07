@@ -61,10 +61,10 @@ int main(int argc, char **argv){
 
 
   MPI_Info_create(&info); 
-  MPI_Info_set(info, "cb_buffer_size", cb_buffer_size);
-  MPI_Info_set(info, "cb_nodes", cb_nodes);
+  //MPI_Info_set(info, "cb_buffer_size", cb_buffer_size);
+  //MPI_Info_set(info, "cb_nodes", cb_nodes);
   
-  float file_size = dims_x*dims_y*dims_z*sizeof(unsigned short)/1024.0/1024.0/1024.0;
+  float file_size = dims_x*dims_y*sizeof(double)/1024.0/1024.0/1024.0;
   if(mpi_rank == 0){
     printf("(x,y) is (%llu, %llu), file size is [%f]GB\n", dims_x,  dims_y, file_size);
   }
@@ -72,6 +72,7 @@ int main(int argc, char **argv){
 
   //Create new file and write result to this file
   plist_id3 = H5Pcreate(H5P_FILE_ACCESS);
+  if(col==1)
   H5Pset_fapl_mpio(plist_id3, comm, info);
     
   file_id2 = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, plist_id3);
@@ -127,7 +128,7 @@ int main(int argc, char **argv){
   //printf("rank %d,start0 %lld count0 %lld,start1 %lld count1 %lld\n",mpi_rank,result_offset[0],result_count[0],result_offset[1],result_count[1]);
   MPI_Barrier(comm);
   double t1 = MPI_Wtime()-t0;
-  if(mpi_rank==0) printf("Data size %.2f TB, Write time %.2fs Bandwidth %.2f Numproc %d, Numost %d\n",my_size,t1,my_size/t1/1024.0,mpi_size,72);
+  if(mpi_rank==0) printf("Data size %.2f GB, Write Cost %.2f, Bandwidth %.2f Numproc %d\n",file_size,t1,file_size/t1,mpi_size);
 
   free(data_t);
 

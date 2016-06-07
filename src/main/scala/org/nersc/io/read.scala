@@ -55,7 +55,7 @@ object read {
       extensions.exists(file.getName.endsWith(_))
     }
   }
-
+  //used in reading a folder of hdf5 file, the read_whole_dataset is a serial read. 
   private def read_whole_dataset(FILENAME: String, DATASETNAME: String): (Array[Array[Double]]) = {
     val logger = LoggerFactory.getLogger(getClass)
     var file_id = -2
@@ -205,102 +205,6 @@ object read {
     dset_data
   }
 
-
-  //  global_array_dims=3
-  //  global_array_size=[1000. 1000. 1000]
-  //  #
-  //  #
-  //  # Direction viewed from top-down (z)
-  //  #      1
-  //  #  2   5(0, 6)    4
-  //  #      3
-  //  # (0)  is myselft
-  //  # (5)  is the one above me
-  //  # (6)  is the one below conrrent
-  //move_direction =[0, 1, 2, 3, 4, 5, 6]
-
-  def rowmajor_l_reverse(index: Int): Array[Int] ={
-    //convert index to 3D coordinate
-    var global_array_dims = 3
-    var indexi=index
-    var global_array_size= Array(2000,2000,800)
-    var coordinate = new Array[Int](3)
-    for (i <- Range(0,global_array_dims).reverse ){
-      coordinate:+ (indexi % global_array_size(i))
-      indexi = indexi / global_array_size(i)
-    }
-    coordinate
-  }
-
-  def rowmajor_l(coordinate:Array[Int]): Int= {
-    //linear coordinate
-    var box_id = coordinate(0)
-    var global_array_size= Array(2000,2000,800)
-    for (i <- Range(1, coordinate.length - 1)) {
-      box_id = box_id * global_array_size(i) + coordinate(i)
-    }
-    box_id
-  }
-  def move_coordinate(coordinate: Array[Int], direction: Int):Array[Int] = {
-    var new_coordinate = coordinate
-    var global_array_size= Array(2000,2000,800)
-    if (direction != 0){
-      if (direction != 1){
-        if (new_coordinate(0) - 1 >= 0){
-          new_coordinate(0) = new_coordinate(0) - 1
-        }else{
-          new_coordinate(0) = 0
-        }
-      }else if (direction != 2){
-        if (new_coordinate(1) - 1 >= 0){
-          new_coordinate(1) = new_coordinate(1) - 1
-        }else{
-          new_coordinate(1) = 0
-        }
-      }else if (direction != 3){
-        if (new_coordinate(0) + 1 > global_array_size(0)){
-          new_coordinate(0) = global_array_size(0)
-        }else{
-          new_coordinate(0) = new_coordinate(0) + 1
-        }
-      }else if (direction != 4){
-        if(new_coordinate(1) + 1 > global_array_size(1)){
-          new_coordinate(1) = global_array_size(1)
-        }else{
-          new_coordinate(1) = new_coordinate(1) + 1
-        }
-      }else if (direction != 5){
-        if (new_coordinate(2) + 1 > global_array_size(2)){
-          new_coordinate(2) = global_array_size(2)
-        }else{
-          new_coordinate(2) = new_coordinate(2) + 1
-        }
-      }else if (direction != 6){
-        if (new_coordinate(2) - 1 >= 0){
-          new_coordinate(2) = new_coordinate(2) - 1
-        }else{
-          new_coordinate(2) = 0
-        }
-      }else{
-        print("Un-defined direction")
-      }
-    }
-    new_coordinate
-  }
-
-  def maper3D(V:Double,K:Int): (Int, Double)= { 
-    var move_direction = Array(0, 1, 2, 3, 4, 5, 6)
-    var coordinate = rowmajor_l_reverse (K)
-    var box_id:Int= 1
-
-    for (i<- Range(0, move_direction.length ) ){
-      var new_coordinate = move_coordinate(coordinate, move_direction(i))
-      // Use the lineried offset as id
-      box_id = rowmajor_l(new_coordinate)
-    }
-    (box_id,V)
-  }
-
   def h5read_point(sc:SparkContext, inpath: String, variable: String, partitions: Long): RDD[(Double,Int)] = {
     val file = new File(inpath)
     val logger = LoggerFactory.getLogger(getClass)
@@ -314,16 +218,22 @@ object read {
         num_partitions = rows
       }
       val step: Long = rows / num_partitions
-      val arr = sc.range(0, rows, step, partitions.toInt).flatMap(x =>
-        read_hyperslab(inpath, variable, x, x + step)._1 zip read_hyperslab(inpath, variable, x, x + step)._2)
+      val arr = sc.range(0, rows, step, partitions.toInt).flatMap(x =>{
+          var data_array = read_hyperslab(inpath, variable, x, x + step)
+          (data_array._1 zip data_array._2)
+      })
+//        read_hyperslab(inpath, variable, x, x + step)._1 zip read_hyperslab(inpath, variable, x, x + step)._2)
       arr
     }
     else {
       val okext = List("h5", "hdf5")
       val listf = getListOfFiles(file, okext)
       logger.info("Read" + listf.length + " files from directory:" + inpath)
-      val arr = sc.parallelize(listf, partitions.toInt).map(x => x.toString).flatMap(x =>
-        read_hyperslab(x, variable,0,1e100.toLong)._1 zip read_hyperslab(x, variable,0,1e100.toLong)._2)
+      val arr = sc.parallelize(listf, partitions.toInt).map(x => x.toString).flatMap(x =>{
+          var data_array = read_hyperslab(inpath, variable, 0,1e100.toLong)
+          (data_array._1 zip data_array._2)
+      })
+//        read_hyperslab(x, variable,0,1e100.toLong)._1 zip read_hyperslab(x, variable,0,1e100.toLong)._2)
       arr
     }
   }

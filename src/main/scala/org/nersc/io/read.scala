@@ -1,16 +1,7 @@
-/*
-hdf5 reader in scala
-*/
 /************************************************************
-  This example shows how to read and write data to a
-  dataset by filename/datasetname.  The program first writes integers
-  in a hyperslab selection to a dataset with dataspace
-  dimensions of DIM_XxDIM_Y, then closes the file.  Next, it
-  reopens the file, reads back the data, and outputs it to
-  the screen.  Finally it reads the data again using a
-  different hyperslab selection, and outputs the result to
-  the screen.
- ************************************************************/
+HDF5 reader in spark
+************************************************************/
+
 package org.nersc.io
 
 import ncsa.hdf.hdf5lib.H5._

@@ -17,8 +17,10 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.mllib.linalg.DenseVector
 import org.apache.spark.SparkContext
 
+import scala.collection.immutable.NumericRange
+
 object read {
-  private def getdimentions(file: String, variable: String): Array[Long] = {
+  private def getdimensions(file: String, variable: String): Array[Long] = {
     val logger = LoggerFactory.getLogger(getClass)
     var file_id = -2
     var dataset_id = -2
@@ -103,7 +105,7 @@ object read {
     }
   }
 
-  private def read_hyperslab(FILENAME: String, DATASETNAME: String, start: Long, end: Long): (Array[Double], Array[Int]) = {
+  private def read_hyperslab(FILENAME: String, DATASETNAME: String, start: Long, end: Long): (Array[Double], Array[Long]) = {
     val logger = LoggerFactory.getLogger(getClass)
     var file_id = -2
     var dataset_id = -2
@@ -177,14 +179,14 @@ object read {
     if (global_start < 0) global_start = 0
     var global_end = end1 * subset_length
     import Array._
-    val index: Array[Int] = range(global_start.toInt, global_end.toInt, 1)
+    val index: Array[Long] = NumericRange(global_start, global_end, 1).toArray
     (dset_datas, index)
   }
 
   private def read_array(FILENAME: String, DATASETNAME: String, start: Long, end: Long): (Array[Array[Double]]) = {
-    val dset_dims: Array[Long] = getdimentions(FILENAME, DATASETNAME)
-    var (dset_datas: Array[Double], index: Array[Int]) = read_hyperslab(FILENAME, DATASETNAME, start, end)
-    var dset_data: Array[Array[Double]] = Array.ofDim((end - start).toInt, (index(-1) - index(0)))
+    val dset_dims: Array[Long] = getdimensions(FILENAME, DATASETNAME)
+    var (dset_datas: Array[Double], index: Array[Long]) = read_hyperslab(FILENAME, DATASETNAME, start, end)
+    var dset_data: Array[Array[Double]] = Array.ofDim((end - start).toInt, index.length/(end-start).toInt)
     var end1 = end
     if (end1 > dset_dims(1))
       end1 = dset_dims(1)
@@ -196,13 +198,13 @@ object read {
     dset_data
   }
 
-  def h5read_point(sc:SparkContext, inpath: String, variable: String, partitions: Long): RDD[(Double,Int)] = {
+  def h5read_point(sc:SparkContext, inpath: String, variable: String, partitions: Long): RDD[(Double,Long)] = {
     val file = new File(inpath)
     val logger = LoggerFactory.getLogger(getClass)
     if (file.exists && file.isFile) {
       //read single file
       logger.info("Read Single file:" + inpath)
-      val dims: Array[Long] = getdimentions(inpath, variable)
+      val dims: Array[Long] = getdimensions(inpath, variable)
       val rows: Long = dims(0)
       var num_partitions: Long = partitions
       if (rows < num_partitions) {
@@ -235,7 +237,7 @@ object read {
     if (file.exists && file.isFile) {
       //read single file
       logger.info("Read Single file:" + inpath)
-      val dims: Array[Long] = getdimentions(inpath, variable)
+      val dims: Array[Long] = getdimensions(inpath, variable)
       val rows: Long = dims(0)
       var num_partitions: Long = partitions
       if (rows < num_partitions) {

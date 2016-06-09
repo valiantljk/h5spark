@@ -18,7 +18,7 @@ import org.apache.spark.mllib.linalg.DenseVector
 import org.apache.spark.SparkContext
 
 object read {
-  private def getdimentions(file: String, variable: String): Array[Long] = {
+  private def getdimentions(file: String, variable: String): (Array[Long],Int) = {
     val logger = LoggerFactory.getLogger(getClass)
     var file_id = -2
     var dataset_id = -2
@@ -38,7 +38,7 @@ object read {
     H5Sclose(dataspace_id)
     H5Dclose(dataset_id)
     H5Fclose(file_id)
-    dset_dims
+    (dset_dims,ranks)
   }
 
   private def getListOfFiles(dir: File, extensions: List[String]): List[File] = {
@@ -108,7 +108,8 @@ object read {
     var file_id = -2
     var dataset_id = -2
     var dataspace_id = -2
-    var ranks: Int = 2
+    //var ranks: Int = 2
+    //var dset_dims = new Array[Long](2)
     var end1 = end
     /*Open an existing file*/
     try {
@@ -125,7 +126,7 @@ object read {
       case e: Exception => logger.info("\nDataset error\n")
     }
     //Get dimension information of the dataset
-    var dset_dims = new Array[Long](2)
+    /*var dset_dims = new Array[Long](2)
     try {
       dataspace_id = H5Dget_space(dataset_id)
       ranks = H5Sget_simple_extent_ndims(dataspace_id)
@@ -135,6 +136,8 @@ object read {
     catch {
       case e: Exception => logger.info("\nDataspace error")
     }
+    */
+    var (dset_dims:Array[Long],ranks:Int) = getdimentions(FILENAME, DATASETNAME)
     //Adjust last access
     if (end1 > dset_dims(0))
       end1 = dset_dims(0)
@@ -182,15 +185,22 @@ object read {
   }
 
   private def read_array(FILENAME: String, DATASETNAME: String, start: Long, end: Long): (Array[Array[Double]]) = {
-    val dset_dims: Array[Long] = getdimentions(FILENAME, DATASETNAME)
     var (dset_datas: Array[Double], index: Array[Int]) = read_hyperslab(FILENAME, DATASETNAME, start, end)
-    var dset_data: Array[Array[Double]] = Array.ofDim((end - start).toInt, (index(-1) - index(0)))
     var end1 = end
-    if (end1 > dset_dims(1))
-      end1 = dset_dims(1)
+    //var ranks: Int = 2
+    //var dset_dims = new Array[Long](2)
+    var (dset_dims:Array[Long], ranks:Int) = getdimentions(FILENAME, DATASETNAME)
+    //Adjust last access
+    if (end1 > dset_dims(0))
+      end1 = dset_dims(0)
+    var subset_length: Long = 1
+    for (i <- 1 to ranks-1) {
+      subset_length *= dset_dims(i)
+    }
+    var dset_data: Array[Array[Double]] = Array.ofDim((end1 - start).toInt, subset_length.toInt)
     for (id <- 0 to (end1 - start).toInt - 1) {
-      for (jd <- 0 to dset_dims(1).toInt - 1) {
-        dset_data(id)(jd) = dset_datas(id * dset_dims(1).toInt + jd)
+      for (jd <- 0 to subset_length.toInt - 1) {
+        dset_data(id)(jd) = dset_datas(id * subset_length.toInt + jd)
       }
     }
     dset_data
@@ -202,7 +212,7 @@ object read {
     if (file.exists && file.isFile) {
       //read single file
       logger.info("Read Single file:" + inpath)
-      val dims: Array[Long] = getdimentions(inpath, variable)
+      val (dims: Array[Long],ranks:Int) = getdimentions(inpath, variable)
       val rows: Long = dims(0)
       var num_partitions: Long = partitions
       if (rows < num_partitions) {
@@ -235,7 +245,7 @@ object read {
     if (file.exists && file.isFile) {
       //read single file
       logger.info("Read Single file:" + inpath)
-      val dims: Array[Long] = getdimentions(inpath, variable)
+      val (dims: Array[Long],ranks:Int) = getdimentions(inpath, variable)
       val rows: Long = dims(0)
       var num_partitions: Long = partitions
       if (rows < num_partitions) {

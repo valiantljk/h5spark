@@ -187,12 +187,10 @@ object read {
     val dset_dims: Array[Long] = getdimensions(FILENAME, DATASETNAME)
     val end1 = if (end > dset_dims(0) ) dset_dims(0) else end
     var (dset_datas: Array[Double], index: Array[Long]) = read_hyperslab(FILENAME, DATASETNAME, start, end)
-    var dset_data: Array[Array[Double]] = Array.ofDim((end1 - start).toInt, index.length/(end1-start).toInt)
-    for (id <- 0 to (end1 - start).toInt - 1) {
-      for (jd <- 0 to dset_dims(1).toInt - 1) {
+    var dset_data: Array[Array[Double]] = Array.ofDim((end1 - start).toInt, dset_dims(1).toInt)
+    for (id <- 0 to ((end1 - start).toInt - 1); 
+         jd <- 0 to (dset_dims(1).toInt - 1) )
         dset_data(id)(jd) = dset_datas(id * dset_dims(1).toInt + jd)
-      }
-    }
     dset_data
   }
 

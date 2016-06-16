@@ -103,7 +103,7 @@ object read {
     }
   }
 
-  private def read_hyperslab(FILENAME: String, DATASETNAME: String, start: Long, end: Long): (Array[Double], Array[Int]) = {
+  private def read_hyperslab(FILENAME: String, DATASETNAME: String, start: Long, end: Long): (Array[Double], Array[Long]) = {
     val logger = LoggerFactory.getLogger(getClass)
     var file_id = -2
     var dataset_id = -2
@@ -180,7 +180,7 @@ object read {
     if (global_start < 0) global_start = 0
     var global_end = end1 * subset_length
     import Array._
-    val index: Array[Int] = range(global_start.toInt, global_end.toInt, 1)
+    val index: Array[Long] = NumericRange(global_start, global_end, 1).toArray
     (dset_datas, index)
   }
 
@@ -198,6 +198,7 @@ object read {
       subset_length *= dset_dims(i)
     }
     var dset_data: Array[Array[Double]] = Array.ofDim((end1 - start).toInt, subset_length.toInt)
+    var (dset_datas: Array[Double], index: Array[Long]) = read_hyperslab(FILENAME, DATASETNAME, start, end)
     for (id <- 0 to (end1 - start).toInt - 1) {
       for (jd <- 0 to subset_length.toInt - 1) {
         dset_data(id)(jd) = dset_datas(id * subset_length.toInt + jd)
@@ -220,7 +221,7 @@ object read {
       }
       val step: Long = rows / num_partitions
       val arr = sc.range(0, rows, step, partitions.toInt).flatMap(x =>{
-          var data_array = read_hyperslab(inpath, variable, x, x + step)
+          var (data_array: Array[Double], index: Array[Long]) = read_hyperslab(inpath, variable, x, x + step)
           (data_array._1 zip data_array._2)
       })
 //        read_hyperslab(inpath, variable, x, x + step)._1 zip read_hyperslab(inpath, variable, x, x + step)._2)
@@ -231,7 +232,7 @@ object read {
       val listf = getListOfFiles(file, okext)
       logger.info("Read" + listf.length + " files from directory:" + inpath)
       val arr = sc.parallelize(listf, partitions.toInt).map(x => x.toString).flatMap(x =>{
-          var data_array = read_hyperslab(inpath, variable, 0,1e100.toLong)
+          var (data_array: Array[Double], index: Array[Long]) = read_hyperslab(inpath, variable, 0,1e100.toLong)
           (data_array._1 zip data_array._2)
       })
 //        read_hyperslab(x, variable,0,1e100.toLong)._1 zip read_hyperslab(x, variable,0,1e100.toLong)._2)

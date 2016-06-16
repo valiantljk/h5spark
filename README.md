@@ -59,11 +59,14 @@ object readtest {
 }
 ```
 
-You can also load the HDF5 data into other RDD formats, e.g., 
+Current h5spark read API supports:
+
 ```
-val rdd = read.h5read_vec (sc,inputpath, variablename, partition) //Load as an indexedvector: 
-val rdd = read.h5read_irow (sc,inputpath, variablename, partition) //Load as an indexedrow: 
-val rdd = read.h5read_imat (sc,inputpath, variablename, partition) //Load as an indexedmatrix: 
+val rdd = read.h5read_point (sc, inputpath, variablename, partition) //load n-D data into RDD[(value:Double,key:Long)]
+val rdd = read.h5read (sc, inputpath, variablename, partition) //load n-D data into RDD[Array[Double]]
+val rdd = read.h5read_vec (sc,inputpath, variablename, partition) //Load n-D data into RDD[DenseVector] 
+val rdd = read.h5read_irow (sc,inputpath, variablename, partition) //Load n-D data into RDD[IndexedRow] 
+val rdd = read.h5read_imat (sc,inputpath, variablename, partition) //Load n-D data into IndexedRowMatrix
 ```
 
 #Sample Batch Job Script on Cori

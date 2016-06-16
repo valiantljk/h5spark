@@ -221,7 +221,6 @@ object read {
           var data_array = read_hyperslab(inpath, variable, x, x + step)
           (data_array._1 zip data_array._2)
       })
-//        read_hyperslab(inpath, variable, x, x + step)._1 zip read_hyperslab(inpath, variable, x, x + step)._2)
       arr
     }
     else {
@@ -232,7 +231,6 @@ object read {
           var data_array = read_hyperslab(inpath, variable, 0,1e100.toLong)
           (data_array._1 zip data_array._2)
       })
-//        read_hyperslab(x, variable,0,1e100.toLong)._1 zip read_hyperslab(x, variable,0,1e100.toLong)._2)
       arr
     }
   }
@@ -243,6 +241,7 @@ object read {
     if (file.exists && file.isFile) {
       //read single file
       logger.info("Read Single file:" + inpath)
+
       val (dims: Array[Long],ranks:Int) = getdimentions(inpath, variable)
       val rows: Long = dims(0)
       var num_partitions: Long = partitions

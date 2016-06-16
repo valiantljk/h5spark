@@ -16,7 +16,7 @@ import org.apache.spark.mllib.linalg.distributed.IndexedRow
 import org.apache.spark.rdd.RDD
 import org.apache.spark.mllib.linalg.DenseVector
 import org.apache.spark.SparkContext
-
+import scala.collection.immutable.NumericRange
 object read {
   private def getdimentions(file: String, variable: String): (Array[Long],Int) = {
     val logger = LoggerFactory.getLogger(getClass)
@@ -185,10 +185,7 @@ object read {
   }
 
   private def read_array(FILENAME: String, DATASETNAME: String, start: Long, end: Long): (Array[Array[Double]]) = {
-    var (dset_datas: Array[Double], index: Array[Int]) = read_hyperslab(FILENAME, DATASETNAME, start, end)
     var end1 = end
-    //var ranks: Int = 2
-    //var dset_dims = new Array[Long](2)
     var (dset_dims:Array[Long], ranks:Int) = getdimentions(FILENAME, DATASETNAME)
     //Adjust last access
     if (end1 > dset_dims(0))
@@ -207,7 +204,7 @@ object read {
     dset_data
   }
 
-  def h5read_point(sc:SparkContext, inpath: String, variable: String, partitions: Long): RDD[(Double,Int)] = {
+  def h5read_point(sc:SparkContext, inpath: String, variable: String, partitions: Long): RDD[(Double,Long)] = {
     val file = new File(inpath)
     val logger = LoggerFactory.getLogger(getClass)
     if (file.exists && file.isFile) {
@@ -221,7 +218,7 @@ object read {
       }
       val step: Long = rows / num_partitions
       val arr = sc.range(0, rows, step, partitions.toInt).flatMap(x =>{
-          var (data_array: Array[Double], index: Array[Long]) = read_hyperslab(inpath, variable, x, x + step)
+          var data_array = read_hyperslab(inpath, variable, x, x + step)
           (data_array._1 zip data_array._2)
       })
 //        read_hyperslab(inpath, variable, x, x + step)._1 zip read_hyperslab(inpath, variable, x, x + step)._2)
@@ -232,7 +229,7 @@ object read {
       val listf = getListOfFiles(file, okext)
       logger.info("Read" + listf.length + " files from directory:" + inpath)
       val arr = sc.parallelize(listf, partitions.toInt).map(x => x.toString).flatMap(x =>{
-          var (data_array: Array[Double], index: Array[Long]) = read_hyperslab(inpath, variable, 0,1e100.toLong)
+          var data_array = read_hyperslab(inpath, variable, 0,1e100.toLong)
           (data_array._1 zip data_array._2)
       })
 //        read_hyperslab(x, variable,0,1e100.toLong)._1 zip read_hyperslab(x, variable,0,1e100.toLong)._2)

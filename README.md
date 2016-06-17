@@ -37,6 +37,28 @@ def test_h5sparkReadsingle():
 if __name__ == '__main__':
     test_h5sparkReadsingle()
 ```
+
+Current h5spark python read API:
+
+Read single file: 
+```
+h5read(sc,(file,dataset),mode='single', partitions)
+```
+
+Read multiple files:
+
+Takes in a list of (file, dataset) tuples, one such tuple or the name of a file that contains
+    a list of files and returns rdd with each row as a record
+```
+h5read(sc,file_list_or_txt_file,mode='multi', partitions)
+
+```
+
+Besides, we do have the functions to return indexedrow and indexedrowmatrix
+```
+h5read_irow
+h5read_imat
+```
 #Use in Scala Codes
 1. export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:your_project_dir/lib
 2. cp h5spark/target/scala-2.10/h5spark_2.10-1.0.jar your_project_dir/lib/
@@ -59,7 +81,7 @@ object readtest {
 }
 ```
 
-Current h5spark read API supports:
+Current h5spark scala read API supports:
 
 ```
 val rdd = read.h5read_point (sc, inputpath, variablename, partition) //load n-D data into RDD[(value:Double,key:Long)]

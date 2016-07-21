@@ -8,6 +8,8 @@ mysparkjob_*
 /project/target
 /project/project
 mpiio/h5move
+mpiio/h5write
+mpiio/h5read
 src/main/scala/org/nersc/io/test/'
 src/main/scala/org/nersc/io/test/hyperRead.java
 src/main/scala/org/nersc/io/test/test

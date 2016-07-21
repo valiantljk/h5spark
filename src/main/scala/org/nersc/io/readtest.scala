@@ -41,7 +41,7 @@ object readtest {
     //logger.info("\nRDD_Count: "+count+" , Total number of rows of all hdf5 files\n")
     rdd0.take(100).foreach(println)
     println("RDD_Count:"+count)
-   println(s" +++ count = $count")
+    println(s" +++ count = $count")
     //logger.info("\nRDD_Count: "+count+" , Total number of rows of all hdf5 files\n")
     //logger.info("\nRDD_First: ")
     //rdd.take(1)(0).toArray.foreach(println)

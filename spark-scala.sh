@@ -2,7 +2,7 @@
 
 
 #SBATCH -p debug
-#SBATCH -N 6
+#SBATCH -N 2
 #SBATCH -t 00:05:00
 #SBATCH -e mysparkjob_%j.err
 #SBATCH -o mysparkjob_%j.out
@@ -18,18 +18,19 @@ export LD_LIBRARY_PATH=$LD_LBRARY_PATH:$PWD/lib
 
 ###load single large hdf5 file####
 repartition="200"
-inputfile="/global/cscratch1/sd/jialin/io-ticket/udf-dbin/fake-2d-tiny.h5p"
+inputfile="/scratch1/scratchdirs/jialin/celestial/dr12/photoObj-000109-1-0023.fits.h5"
+#inputfile="/global/cscratch1/sd/jialin/io-ticket/udf-dbin/fake-2d-tiny.h5p"
 app_name="H5Sspark-udf"
-dataset="/testg/testd"
+dataset="HDU1/DATA/UERR"
 
 spark-submit --verbose\
   --master $SPARKURL\
   --name $app_name \
-  --driver-memory 100G\
-  --executor-cores 32 \
-  --driver-cores 32  \
-  --num-executors=5 \
-  --executor-memory 105G\
+  --driver-memory 50G\
+  --executor-cores 24 \
+  --driver-cores 24  \
+  --num-executors=1 \
+  --executor-memory 50G\
   --class org.nersc.io.readtest\
   --conf spark.eventLog.enabled=true\
   --conf spark.eventLog.dir=$SCRATCH/spark/spark_event_logs\

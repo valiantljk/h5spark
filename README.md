@@ -3,13 +3,13 @@
 2. Optimize I/O Performance on HPC with Lustre Filesystems Tuning
 
 # Input and Output
-1. Input is a HDF5 file
+1. Input is HDF5 file(s)
 3. Output is a RDD object
 
 #Download H5Spark
-1. git clone https://github.com/valiantljk/h5spark.git
+git clone https://github.com/valiantljk/h5spark.git
 
-#Simply Test H5spark on Cori/Edison
+#Simply Test H5Spark on Cori/Edison
 Python version:
 
 1. export PYTHONPATH=$PYTHONPATH:path_to_h5spark/src/main/python/h5spark

@@ -5,6 +5,8 @@ mysparkjob_*
 *.swp
 *.pyc
 *.csv
+mpiio/h5write
+mpiio/h5read
 /project/target
 /project/project
 mpiio/h5move

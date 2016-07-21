@@ -10,8 +10,8 @@
 1. git clone https://github.com/valiantljk/h5spark.git
 2. cd h5spark
 3. module load sbt (if on NERSC's machine, if not, please install sbt first)
-4. sbt package
-
+4. sbt package (then you can copy the h5spark jar file into your own projects)
+5. sbt assembly (to include the local hdf5 jar files)
 
 #Use in Pyspark Scripts
 

@@ -12,6 +12,7 @@
 3. module load sbt (if on NERSC's machine, if not, please install sbt first)
 4. sbt package (then you can copy the h5spark jar file into your own projects)
 5. sbt assembly (to include the local hdf5 jar files)
+(3,4,5 are for scala version)
 
 #Use in Pyspark Scripts
 

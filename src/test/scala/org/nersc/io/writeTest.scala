@@ -19,24 +19,28 @@ import org.apache.spark.SparkContext
 import scala.collection.immutable.NumericRange
 
 import org.scalatest.FunSpec
+//import org.specs2.mock.Mockito._
+import scala.io.BufferedSource
 import org.specs2.mock._
 import org.specs2.mutable.Specification
-import org.mockito.Mockito.doNothing
-import org.mockito.Moclito._
-import scala.io.BufferedSource
 
-object writeSpec extends Specification with Mockito  {
-   val file =mock[File]
+object writeSpec extends Specification with Mockito{
+   val file = mock[File]
    file.getName returns "file"
+   val sc =new SparkContext()
+   val content = Array(1.1,2.2,3.3)
+   val variable = "temperature"
+   val content_RDD = sc.parallelize(content)   
 
    "write#h5write_array" should {
-     val content =RDD[Array[Double]] 
+ 
 
-    "return false if file exists and should not be overwritten" in {
-      val writeFile = write()
-      file.exists() return true
-      val actual = writeFile.h5write_array(file,content, overwrite = false) 
-      actual must beFalse
+     "return false if file exists and should not be overwritten" in {
+       val writeFile = write
+       file.exists() returns true
+       //sc: org.apache.spark.SparkContext, inpath: String, variable: String, partitions: Long, content:RDD[Double],overwrite:Boolean
+       val actual = writeFile.h5write_array(sc,file,variable,1,content_RDD,overwrite = false) 
+       actual must beFalse
      }
    }
 

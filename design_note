@@ -1,0 +1,44 @@
+Either h5read or h5write should follow this:
+
+Users provide the following: 
+
+0. Parameter 	 Type 		# Notes
+Positional:
+1. Filename  	 String  	# The absolute path to the file
+2. Variable  	 String  
+3. Sparkcontext  SparkContext
+
+Optional:
+4. Partition 	 Long           # By default, equal the number of available executors
+5. RDD_element   (String,String)# This should describe the scheme that you want to represent in the RDD element
+6. Overwrite     Boolean	# Overwrite existing file or not
+
+
+For RDD_Element, we want the users to input:
+1. RDD_Element.shape: element, row, plane, defines how you abstract original HDF5 data in RDD element
+2. RDD_Element.index: Default No; yes (optional)
+
+
+
+*the key idea of RDD_Element is to make it a computable unit, either a single point, or a row, etc
+*the h5spark should figure out the best I/O access pattern for those different element's shape
+*e.g., h5read(...,element,), the underneath function can issue a more efficient hyperslab call to bring data faster into memory
+
+
+
+Function Prototyping: 
+
+package org.nersc.io
+
+
+org.nersc.io.read._ 
+
+    h5read(Filename: String, Variable:String, Sc: SparkContext, Partition:Long, Rdd_element:(String,String)):RDD[T] = {
+    
+    }
+
+org.nersc.io.write._
+    h5write(Filename: String, Variable:String, Sc: SparkContext, Partition:Long, RDD[T], Overwrite:Boolean):Boolean = {
+    
+    }
+

@@ -42,3 +42,15 @@ org.nersc.io.write._
     
     }
 
+The relationship between Rdd_element and RDD[T]
+Rdd_element (element(T), yes)--> RDD[value:T, elementindex:Long]
+Rdd_element (element(T), no) --> RDD[value:T]
+Rdd_element (row(T),yes)     --> RDD[Array[T],rowindex:Long]
+Rdd_element (row(T),no)      --> RDD[Array[T]]
+Rdd_element (plane(T),yes)   --> RDD[Array[T],planeindex:Long]
+Rdd_element (plane(T),no)    --> RDD[Array[T]]
+
+
+The h5read part needs refactor
+The remaining question is how to leaverge the current design for h5write
+

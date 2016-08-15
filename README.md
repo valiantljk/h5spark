@@ -115,3 +115,7 @@ J.L. Liu, E. Racah, Q. Koziol, R. S. Canon, A. Gittens, L. Gerhardt, S. Byna, M.
 #Highlight
 1. Tested at full scale on Cori phase 1, with 1600 nodes, 51200 cores. H5Spark took 2 minutes to load 16 TBs HDF5 2D data
 2. H5Spark takes 35 seconds in loading 2 TB data, while MPI uses 15 seconds. 
+
+#Try Other HDF5/netCDF plugin used in Spark
+1. LLNL: [Spark-HDF5](https://github.com/LLNL/spark-hdf5)
+2. NASA: [SciSpark](https://github.com/SciSpark/SciSpark)

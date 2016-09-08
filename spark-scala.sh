@@ -34,7 +34,7 @@ spark-submit --verbose\
   --conf spark.eventLog.enabled=true\
   --conf spark.eventLog.dir=$SCRATCH/spark/spark_event_logs\
   target/scala-2.10/h5spark-assembly-1.0.jar \
-  $repartition $inputfile $dataset 
+  $repartition "$inputfile" "$dataset" 
 
 
 rm /global/cscratch1/sd/jialin/spark_tmp_dir/*

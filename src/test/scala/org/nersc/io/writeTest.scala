@@ -18,12 +18,12 @@ import org.apache.spark.mllib.linalg.DenseVector
 import org.apache.spark.SparkContext
 import scala.collection.immutable.NumericRange
 
-import org.scalatest.FunSpec
+//import org.scalatest.FunSpec
 //import org.specs2.mock.Mockito._
 import scala.io.BufferedSource
-import org.specs2.mock._
-import org.specs2.mutable.Specification
-
+//import org.specs2.mock._
+//import org.specs2.mutable.Specification
+/*
 object writeSpec extends Specification with Mockito{
    val file = mock[File]
    file.getName returns "file"
@@ -45,4 +45,4 @@ object writeSpec extends Specification with Mockito{
    }
 
 }
-
+*/

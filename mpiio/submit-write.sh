@@ -1,11 +1,10 @@
 #!/bin/bash
 #SBATCH -p debug 
-#SBATCH -N 10
+#SBATCH -N 32
 #SBATCH -t 00:10:00
 #SBATCH -J h5write
 #SBATCH -e %j.err
 #SBATCH -o %j.out
-
 ##arguments: 
 ## -i: inputfilename, -o:outputfilename, -b: collective_buffersize, -n: collective_buffernodes, -k: iscollective, -v: datasetname
 
@@ -16,6 +15,7 @@
 #module load cray-hdf5-parallel
 #srun -n 1600 ./h5read -f /global/cscratch1/sd/gittens/CFSROhdf5/oceanTemps.hdf5  -b 16777216 -n 50 -k 0 -v temperatures
 #srun -n 1200 ./h5move -i /global/cscratch1/sd/gittens/CFSROhdf5/oceanTemps.hdf5 -o /global/cscratch1/sd/jialin/climate/temp2.h5 -b 16777216 -n 50 -k 0 -v temperatures
-
-
-srun -n 240 ./h5write -f /scratch1/scratchdirs/jialin/hdf-data/ost/test4.h5 -b 16777216 -n 10 -k 1 -x 240000 -y 300000
+scratch=/scratch3/scratchdirs/jialin/hdf-data/ost
+i=2
+rm $scratch$i/*
+srun -n 320 ./h5write -f $SCRATCH/hdf-data/test12.h5 -b 16777216 -n 10 -k 1 -x 24000 -y 300000

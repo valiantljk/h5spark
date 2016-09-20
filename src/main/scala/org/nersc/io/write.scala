@@ -19,7 +19,7 @@ import org.apache.spark.SparkContext
 import scala.collection.immutable.NumericRange
 
 
-object write {
+//object write {
   /* the h5write_array take one RDD partition
    * the structure of RDD is essential for this function, e.g., it can be RDD[Array[Double]], or RDD[value: Double, index: Long]
    * and figure out the hyperslab for writing that partition into the hdf5 file 
@@ -28,9 +28,9 @@ object write {
 
 
   //def h5write_1d()
-  def h5write(sc:SparkContext,inpath:File,variable:String, partitions: Long, content: RDD[Array[Double],Long], overwrite: Boolean])
-  def h5write_2d(sc: SparkContext, inpath: File, variable: String, partitions: Long,content: RDD[Double],overwrite: Boolean):Boolean = {
-    true
-  }
+//  def h5write(sc:SparkContext,inpath:File,variable:String, partitions: Long, content: RDD[Array[Double],Long], overwrite: Boolean])
+//  def h5write_2d(sc: SparkContext, inpath: File, variable: String, partitions: Long,content: RDD[Double],overwrite: Boolean):Boolean = {
+//    true
+//  }
   //def h5write_3d(){} 
-}
+//}

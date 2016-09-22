@@ -1,4 +1,12 @@
 /*
+   Copyright (C) 2016 The HDF Group
+   All rights reserved
+
+   This example is based on HdfsWordCount.scala provided by Apache.
+
+*/
+
+/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -22,25 +30,25 @@ import org.apache.spark.streaming.{Seconds, StreamingContext}
 
 /**
  * Counts words in new text files created in the given directory
- * Usage: HdfsWordCount <directory>
+ * Usage: HdfsByteCount <directory>
  *   <directory> is the directory that Spark Streaming will use to find and read new text files.
  *
  * To run this on your local machine on directory `localdir`, run this example
  *    $ bin/run-example \
- *       org.apache.spark.examples.streaming.HdfsWordCount localdir
+ *       org.hdfgroup.spark.HdfsByteCount localdir
  *
- * Then create a text file in `localdir` and the words in the file will get counted.
+ * Then create a binary file in `localdir` and the number of the bytes will get counted.
  */
 object HdfsByteCount {
   def main(args: Array[String]) {
     if (args.length < 1) {
-      System.err.println("Usage: HdfsWordCount <directory>")
+      System.err.println("Usage: HdfsByteCount <directory>")
       System.exit(1)
     }
 
-    // StreamingExamples.setStreamingLogLevels()
     val sparkConf = new SparkConf().setAppName("HdfsByteCount")
-    // Create the context
+    
+    // Create the context. Check every 2 second.
     val ssc = new StreamingContext(sparkConf, Seconds(2))
 
     // Create the FileInputDStream on the directory and use the
@@ -48,9 +56,6 @@ object HdfsByteCount {
     val bytes = ssc.binaryRecordsStream(args(0), 1)
     var count = bytes.count()
     count.print()
-    // val words = lines.flatMap(_.split(" "))
-    // val wordCounts = words.map(x => (x, 1)).reduceByKey(_ + _)
-    // wordCounts.print()
     ssc.start()
     ssc.awaitTermination()
   }

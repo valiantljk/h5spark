@@ -33,9 +33,9 @@ import org.elasticsearch.spark.rdd.EsSpark
 
 
 /**
- * Counts words in new text files created in the given directory
+ * Counts bytes in binary files created in the given directory
  * Usage: HdfsByteCount <directory>
- *   <directory> is the directory that Spark Streaming will use to find and read new text files.
+ *   <directory> is the directory that Spark Streaming will use to find and read new binary files.
  *
  * To run this on your local machine on directory `localdir`, run this example
  *    $ bin/run-example \
@@ -54,9 +54,11 @@ object HdfsByteCount {
     val sparkConf = new SparkConf().setAppName("HdfsByteCount")
     sparkConf.set("es.nodes", "giraffe")
 
+    // Creating multiple contexts will not work with Spark.
+    //
+    // val sc = new SparkContext(...)
     // val numbers = Map("one" -> 1, "two" -> 2, "three" -> 3)
     // val airports = Map("arrival" -> "Otopeni", "SFO" -> "San Fran")
-
     // sc.makeRDD(Seq(numbers, airports)).saveToEs("spark/docs")
 
     // Create the context. Check every 2 second.
@@ -66,16 +68,23 @@ object HdfsByteCount {
     // Create the FileInputDStream on the directory and use the
     // stream to count bytes in new files created
     val bytes = ssc.binaryRecordsStream(args(0), 1)
-    val arr = new ArrayBuffer[String]
+    // val arr = new ArrayBuffer[String]
     bytes.foreachRDD(rdd => {
         if(!rdd.partitions.isEmpty) {
-            bytes.saveAsObjectFiles("hdfs://jaguar:9000/test.bin")
+            // rdd.map(r=>Map("data"->r)).saveToES("spark/docs")
+            // It doesn't work.                        
+            // rdd.saveAsObjectFiles("hdfs://jaguar:9000/test.bin")
+            
+            // The following doesn't work either.
+            // bytes.saveAsObjectFiles("hdfs://jaguar:9000/test.bin")
+
+            // This is the goal but it doesn't work.
             // EsSpark.saveToEs(rdd, "spark/docs")        
             // print(arr)
         }
     })
-
-
+    val count = bytes.count()
+    count.print()
     ssc.start()
     ssc.awaitTermination()
   }

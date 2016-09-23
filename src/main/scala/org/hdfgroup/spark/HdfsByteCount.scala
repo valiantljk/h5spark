@@ -25,8 +25,12 @@
 
 // scalastyle:off println
 package org.hdfgroup.spark
+import scala.collection.mutable.ArrayBuffer
 import org.apache.spark.SparkConf
 import org.apache.spark.streaming.{Seconds, StreamingContext}
+import org.apache.spark.SparkContext
+import org.elasticsearch.spark.rdd.EsSpark                        
+
 
 /**
  * Counts words in new text files created in the given directory
@@ -46,16 +50,32 @@ object HdfsByteCount {
       System.exit(1)
     }
 
+
     val sparkConf = new SparkConf().setAppName("HdfsByteCount")
-    
+    sparkConf.set("es.nodes", "giraffe")
+
+    // val numbers = Map("one" -> 1, "two" -> 2, "three" -> 3)
+    // val airports = Map("arrival" -> "Otopeni", "SFO" -> "San Fran")
+
+    // sc.makeRDD(Seq(numbers, airports)).saveToEs("spark/docs")
+
     // Create the context. Check every 2 second.
     val ssc = new StreamingContext(sparkConf, Seconds(2))
+
 
     // Create the FileInputDStream on the directory and use the
     // stream to count bytes in new files created
     val bytes = ssc.binaryRecordsStream(args(0), 1)
-    var count = bytes.count()
-    count.print()
+    val arr = new ArrayBuffer[String]
+    bytes.foreachRDD(rdd => {
+        if(!rdd.partitions.isEmpty) {
+            bytes.saveAsObjectFiles("hdfs://jaguar:9000/test.bin")
+            // EsSpark.saveToEs(rdd, "spark/docs")        
+            // print(arr)
+        }
+    })
+
+
     ssc.start()
     ssc.awaitTermination()
   }

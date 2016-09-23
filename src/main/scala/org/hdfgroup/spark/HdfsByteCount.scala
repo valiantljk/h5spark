@@ -30,6 +30,9 @@ import org.apache.spark.SparkConf
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.apache.spark.SparkContext
 import org.elasticsearch.spark.rdd.EsSpark                        
+import org.elasticsearch.spark._
+import org.apache.spark.sql._
+import org.elasticsearch.spark.sql._
 
 
 /**
@@ -44,6 +47,8 @@ import org.elasticsearch.spark.rdd.EsSpark
  * Then create a binary file in `localdir` and the number of the bytes will get counted.
  */
 object HdfsByteCount {
+  def b2s(a: Array[Byte]): String = new String(a)
+       
   def main(args: Array[String]) {
     if (args.length < 1) {
       System.err.println("Usage: HdfsByteCount <directory>")
@@ -71,7 +76,12 @@ object HdfsByteCount {
     // val arr = new ArrayBuffer[String]
     bytes.foreachRDD(rdd => {
         if(!rdd.partitions.isEmpty) {
-            // rdd.map(r=>Map("data"->r)).saveToES("spark/docs")
+            val sc = rdd.context
+            val sqlContext = new SQLContext(sc)
+            val rdd2 = rdd.map(r=>b2s(r))
+            val log = sqlContext.jsonRDD(rdd2)            
+            log.saveToEs("test/apiVersion")
+            // rdd.map(r=>Map("data"->r)).saveToES("test/name")
             // It doesn't work.                        
             // rdd.saveAsObjectFiles("hdfs://jaguar:9000/test.bin")
             

@@ -33,8 +33,8 @@ import org.elasticsearch.spark.rdd.EsSpark
 import org.elasticsearch.spark._
 import org.apache.spark.sql._
 import org.elasticsearch.spark.sql._
-
-
+import java.nio.ByteBuffer
+import java.lang.Float
 /**
  * Counts bytes in binary files created in the given directory
  * Usage: HdfsByteCount <directory>
@@ -44,10 +44,21 @@ import org.elasticsearch.spark.sql._
  *    $ bin/run-example \
  *       org.hdfgroup.spark.HdfsByteCount localdir
  *
- * Then create a binary file in `localdir` and the number of the bytes will get counted.
+ * Then create a binary file in `localdir` and the number of the bytes will
+ * get counted.
  */
 object HdfsByteCount {
-  def b2s(a: Array[Byte]): String = new String(a)
+  def b2s(a: Array[Byte]): String = {
+      println(a.deep.mkString("\n"))
+      val f = ByteBuffer.wrap(a).getFloat
+      Float.toString(f)
+      // println(s)
+      // val k = a.reverse
+      // var sr = new String(k)
+      // println(k.deep.mkString("\n"))
+      // println(sr)
+      // return sr
+  }
        
   def main(args: Array[String]) {
     if (args.length < 1) {
@@ -72,7 +83,7 @@ object HdfsByteCount {
 
     // Create the FileInputDStream on the directory and use the
     // stream to count bytes in new files created
-    val bytes = ssc.binaryRecordsStream(args(0), 1)
+    val bytes = ssc.binaryRecordsStream(args(0), 4)
     // val arr = new ArrayBuffer[String]
     bytes.foreachRDD(rdd => {
         if(!rdd.partitions.isEmpty) {
@@ -81,16 +92,6 @@ object HdfsByteCount {
             val rdd2 = rdd.map(r=>b2s(r))
             val log = sqlContext.jsonRDD(rdd2)            
             log.saveToEs("test/apiVersion")
-            // rdd.map(r=>Map("data"->r)).saveToES("test/name")
-            // It doesn't work.                        
-            // rdd.saveAsObjectFiles("hdfs://jaguar:9000/test.bin")
-            
-            // The following doesn't work either.
-            // bytes.saveAsObjectFiles("hdfs://jaguar:9000/test.bin")
-
-            // This is the goal but it doesn't work.
-            // EsSpark.saveToEs(rdd, "spark/docs")        
-            // print(arr)
         }
     })
     val count = bytes.count()

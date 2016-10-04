@@ -4,6 +4,9 @@
 
    This example is based on HdfsWordCount.scala provided by Apache.
 
+   Last Update: October 4, 2016
+   Author: Hyo-Kyung Lee (hyoklee@hdfgroup.org)
+   
 */
 
 /*
@@ -45,19 +48,16 @@ import java.lang.Float
  *       org.hdfgroup.spark.HdfsByteCount localdir
  *
  * Then create a binary file in `localdir` and the number of the bytes will
- * get counted.
+ * get counted. The value in the binary file will be indexed by Elastic Search.
  */
 object HdfsByteCount {
   def b2s(a: Array[Byte]): String = {
       println(a.deep.mkString("\n"))
       val f = ByteBuffer.wrap(a).getFloat
-      Float.toString(f)
-      // println(s)
-      // val k = a.reverse
-      // var sr = new String(k)
-      // println(k.deep.mkString("\n"))
-      // println(sr)
-      // return sr
+      val s = Float.toString(f)
+      val str = "{\"name\":\""+s+"\", \"location\": \"40.715, -74.011\"}"
+      println(str)
+      return str      
   }
        
   def main(args: Array[String]) {
@@ -70,16 +70,8 @@ object HdfsByteCount {
     val sparkConf = new SparkConf().setAppName("HdfsByteCount")
     sparkConf.set("es.nodes", "giraffe")
 
-    // Creating multiple contexts will not work with Spark.
-    //
-    // val sc = new SparkContext(...)
-    // val numbers = Map("one" -> 1, "two" -> 2, "three" -> 3)
-    // val airports = Map("arrival" -> "Otopeni", "SFO" -> "San Fran")
-    // sc.makeRDD(Seq(numbers, airports)).saveToEs("spark/docs")
-
     // Create the context. Check every 2 second.
     val ssc = new StreamingContext(sparkConf, Seconds(2))
-
 
     // Create the FileInputDStream on the directory and use the
     // stream to count bytes in new files created
@@ -90,8 +82,8 @@ object HdfsByteCount {
             val sc = rdd.context
             val sqlContext = new SQLContext(sc)
             val rdd2 = rdd.map(r=>b2s(r))
-            val log = sqlContext.jsonRDD(rdd2)            
-            log.saveToEs("test/apiVersion")
+            val log = sqlContext.jsonRDD(rdd2)
+            log.saveToEs("attractions/restaurant")
         }
     })
     val count = bytes.count()

@@ -17,6 +17,10 @@ import java.lang.Float
 import java.io._
 import java.util.zip.InflaterInputStream
 
+import org.apache.hadoop.conf.Configuration
+import org.apache.hadoop.fs._
+import org.apache.hadoop.io._ 
+
 /**
  * Read bytes (in chunk) from an HDF file.
  * Usage: HDFByteReader <filename> <offset> <length> <filter>
@@ -46,15 +50,20 @@ object HDFByteReader {
     var arr = Array.fill[Byte](args(2).toInt)(0)
     var in = None: Option[RandomAccessFile]
 
-    var out = None: Option[FileOutputStream]
+    // var out = None: Option[FileOutputStream]
+    var out = None: Option[BufferedOutputStream]
     val sparkConf = new SparkConf().setAppName("HDFByteReader")
+    val sc = new SparkContext()
     sparkConf.set("es.nodes", "giraffe") // change giraffe to your ES server.
     try {
         println("Opening file: "+args(0))
         in = Some(new RandomAccessFile(args(0), "r"))
         in.get.seek(args(1).toLong)
-        out = Some(new FileOutputStream("/tmp/test.bin"))
-
+        // out = Some(new FileOutputStream("/tmp/test.bin"))
+        val fs = FileSystem.get(sc.hadoopConfiguration); 
+        val output = fs.create(new Path("hdfs://jaguar:9000/stream/test.bin"));
+        out = Some(new BufferedOutputStream(output))
+        
         in.get.read(arr)
         println(arr.mkString(" "))        
         if (args(3) == "1" ) {

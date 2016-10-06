@@ -4,7 +4,7 @@ name := "h5spark"
 
 version := "1.0"
 
-scalaVersion := "2.10.5"
+scalaVersion := "2.11.8"
 
 resolvers ++= Seq(
 	"Unidata maven repository" at "http://artifacts.unidata.ucar.edu/content/repositories/unidata-releases",
@@ -13,13 +13,14 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-    "org.apache.spark" %% "spark-core" % "1.5.1" % "provided",
+    "org.apache.spark" %% "spark-core" % "2.0.0" % "provided", 
     "org.scalanlp" %% "breeze" % "0.12" % "provided",
     "org.scalanlp" %% "breeze-natives" % "0.12" % "provided",
     "org.scalanlp" %% "breeze-viz" % "0.12" % "provided",
-    "org.apache.spark" %% "spark-mllib" % "1.5.1" % "provided",
+    "org.apache.spark" %% "spark-mllib" % "2.0.0" % "provided",
     "org.scalactic" %% "scalactic" % "2.2.6",
     "org.scalatest" %% "scalatest" % "2.2.6" % "test"
+
 )
 
 /**

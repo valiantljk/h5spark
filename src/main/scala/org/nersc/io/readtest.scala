@@ -12,11 +12,11 @@ hdf5 reader in scala
   the screen.
  ************************************************************/
 package org.nersc.io
-import ncsa.hdf.hdf5lib._
-import ncsa.hdf.hdf5lib.H5._
-import ncsa.hdf.hdf5lib.HDF5Constants._
-import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException
-import ncsa.hdf.hdf5lib.exceptions.HDF5Exception
+import hdf.hdf5lib._
+import hdf.hdf5lib.H5._
+import hdf.hdf5lib.HDF5Constants._
+import hdf.hdf5lib.exceptions.HDF5LibraryException
+import hdf.hdf5lib.exceptions.HDF5Exception
 import org.slf4j.LoggerFactory
 import scala.io.Source
 import org.apache.spark.SparkContext

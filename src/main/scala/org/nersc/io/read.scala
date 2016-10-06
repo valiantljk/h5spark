@@ -4,10 +4,11 @@ HDF5 reader in spark
 
 package org.nersc.io
 
-import ncsa.hdf.hdf5lib.H5._
-import ncsa.hdf.hdf5lib.HDF5Constants._
-import ncsa.hdf.hdf5lib.exceptions.HDF5LibraryException
-import ncsa.hdf.hdf5lib.exceptions.HDF5Exception
+import hdf.hdf5lib.H5._
+import hdf.hdf5lib.HDF5Constants._
+import hdf.hdf5lib.exceptions.HDF5LibraryException
+import hdf.hdf5lib.exceptions.HDF5Exception
+
 import org.slf4j.LoggerFactory
 import java.io.File
 

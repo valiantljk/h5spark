@@ -86,7 +86,7 @@ def readonep(filename, dset_name, i1, chunk_size):
 			chunk = d[i1:d.shape[0],:]
 		return list(chunk[:])
 	except Exception, e:
-		print "ioerror:%s"%e, x[0]
+		print "ioerror:%s"%e, filename
 	finally:
 		pass
 		f.close()

@@ -64,7 +64,7 @@ int main(int argc, char **argv){
   //MPI_Info_set(info, "cb_buffer_size", cb_buffer_size);
   //MPI_Info_set(info, "cb_nodes", cb_nodes);
   
-  float file_size = dims_x*dims_y*sizeof(double)/1024.0/1024.0/1024.0;
+  float file_size = (double)dims_x*(double)dims_y*(double)sizeof(double)/1024.0/1024.0/1024.0;
   if(mpi_rank == 0){
     printf("(x,y) is (%llu, %llu), file size is [%f]GB\n", dims_x,  dims_y, file_size);
   }
@@ -75,12 +75,13 @@ int main(int argc, char **argv){
   if(col==1)
   H5Pset_fapl_mpio(plist_id3, comm, info);
     
+  //file_id2 = H5Fcreate(filename, H5F_ACC_TRUNC | H5F_ACC_DEBUG, H5P_DEFAULT, plist_id3);
   file_id2 = H5Fcreate(filename, H5F_ACC_TRUNC, H5P_DEFAULT, plist_id3);
   H5Pclose(plist_id3);
   dims2[0] = dims_x;
   dims2[1] = dims_y;
   dataspace_id2 = H5Screate_simple(2, dims2, NULL);
-  dset_id2 = H5Dcreate(file_id2,dataset, H5T_STD_U16LE, dataspace_id2, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  dset_id2 = H5Dcreate(file_id2,dataset, H5T_NATIVE_DOUBLE, dataspace_id2, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
   H5Sclose(dataspace_id2);
  
   result_offset[1] = 0;
@@ -97,11 +98,11 @@ int main(int argc, char **argv){
   result_memspace_id = H5Screate_simple(2, result_memspace_size, NULL);
   data_t = (double *)malloc(result_count[0] * result_count[1] * sizeof(double)); 
 
-  float my_size = (dims_x * dims_y *sizeof(double)) / 1024.0 / 1024.0 / 1024.0;
+  float my_size = ((double)dims_x * (double)dims_y *sizeof(double)) / 1024.0 / 1024.0 / 1024.0;
   srand((unsigned int)time(NULL)); 
   for (i = 0; i < result_count[0]; i++){
     for(j = 0; j < result_count[1]; j++){
- 	data_t[i*result_count[1]+j] = ((double)rand()/(double)(RAND_MAX)) * i;
+ 	data_t[i*result_count[1]+j] = ((double)rand()/(double)(RAND_MAX)) * i+0.001;
     }
   }
   MPI_Barrier(comm);
@@ -128,13 +129,17 @@ int main(int argc, char **argv){
   //printf("rank %d,start0 %lld count0 %lld,start1 %lld count1 %lld\n",mpi_rank,result_offset[0],result_count[0],result_offset[1],result_count[1]);
   MPI_Barrier(comm);
   double t1 = MPI_Wtime()-t0;
+  double total_size=dims_x*dims_y*8/1024.0/1024.0/1024.0;
   if(mpi_rank==0) printf("Data size %.2f GB, Write Cost %.2f, Bandwidth %.2f Numproc %d\n",file_size,t1,file_size/t1,mpi_size);
-
+  if(mpi_rank==0) printf("sizeof(double) %d * dimx %d * dimy %d=total %.2f GB\n",sizeof(double), dims_x, dims_y,total_size);
   free(data_t);
-
+  double tclose=MPI_Wtime();
   H5Sclose(result_space);
   H5Sclose(result_memspace_id);
   H5Dclose(dset_id2);
   H5Fclose(file_id2);
+  tclose=MPI_Wtime()-tclose;
+  if(mpi_rank==0) printf("close time:%.2f",tclose);
   MPI_Finalize();
+ 
 }

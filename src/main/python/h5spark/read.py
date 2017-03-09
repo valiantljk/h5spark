@@ -40,18 +40,22 @@ def readH5Multi(sc, file_list_or_txt_file, partitions=None):
 
 def readH5SingleChunked(sc, filename_dataset_tuple, partitions):
 	assert isinstance(filename_dataset_tuple,tuple), "For single file mode, you must input a tuple."
-	filename, dataset = filename_dataset_tuple
-	rows = h5py.File(filename)[dataset].shape[0]
-	if not partitions:
-		partitions = rows / 50
-	if partitions > rows:
-		partitions = rows
-	step = rows / partitions
-	rdd = sc.range(0, rows, step)\
-		.sortBy(lambda x: x, numPartitions=partitions)\
-		.flatMap(lambda x: readonep(filename,dataset,x,step))
-	return rdd
-
+        try:
+	 filename, dataset = filename_dataset_tuple
+	 rows = h5py.File(filename)[dataset].shape[0]
+	 if not partitions:
+	 	 partitions = rows / 50
+	 if partitions > rows:
+	 	 partitions = rows
+	 step =  rows / partitions
+	 rdd = sc.range(0, rows, step)\
+	 	 .sortBy(lambda x: x, numPartitions=partitions)\
+		 .flatMap(lambda x: readonep(filename,dataset,x,step))
+	 return rdd
+        except, Exception, e:
+         print "ioerror:%s"%e
+        finally:
+         pass
 def h5read_irow(sc,file_list_or_txt_file, mode='multi', partitions=None):
     rdd = h5read(sc, file_list_or_txt_file,mode, partitions)
     indexed_rows = rdd.zipWithIndex().map(lambda (v,k): (k,v))

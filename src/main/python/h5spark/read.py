@@ -69,11 +69,12 @@ def readones(filename_dataname_tuple):
         f=h5py.File(filename,'r')
         d=f[dataname]
         a=list(d[:])
+        f.close()
+        return a
      except Exception, e:
         print "ioerror:%s"%e, filename
-     else:
-          f.close()
-          return a
+     finally:
+          pass
 
 #read a slice from one dataset/file
 def readonep(filename, dset_name, i1, chunk_size):
@@ -85,10 +86,10 @@ def readonep(filename, dset_name, i1, chunk_size):
 		else:
 			chunk = d[i1:d.shape[0],:]
 		return list(chunk[:])
+                f.close()
 	except Exception, e:
 		print "ioerror:%s"%e, x[0]
 	finally:
 		pass
-		f.close()
 
 # In[ ]:

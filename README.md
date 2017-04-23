@@ -6,10 +6,10 @@
 1. Input is HDF5 file(s)
 3. Output is a RDD object
 
-#Download H5Spark
+# Download H5Spark
 git clone https://github.com/valiantljk/h5spark.git
 
-#Simply Test H5Spark on Cori/Edison
+# Simply Test H5Spark on Cori/Edison
 Python version:
 
 1. export PYTHONPATH=$PYTHONPATH:path_to_h5spark/src/main/python/h5spark
@@ -22,7 +22,7 @@ Scala version:
 3. sbt assembly
 4. sbatch spark-scala.sh
 
-#Use in Pyspark Scripts
+# Use in Pyspark Scripts
 
 Add the h5spark path to your python path:
 
@@ -69,7 +69,7 @@ h5read_irow
 h5read_imat
 ```
 
-#Use in Scala Codes
+# Use in Scala Codes
 1. export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:your_project_dir/lib
 2. cp h5spark/target/scala-2.10/h5spark_2.10-1.0.jar your_project_dir/lib/
 3. cp h5spark/lib/* your_project_dir/lib/
@@ -103,19 +103,19 @@ val rdd = read.h5read_irow (sc,inputpath, variablename, partition) //Load n-D da
 val rdd = read.h5read_imat (sc,inputpath, variablename, partition) //Load n-D data into IndexedRowMatrix
 ```
 
-#Questions and Support
+# Questions and Support
 1. If you are using NERSC's machine, please feel free to email consult@nersc.gov 
 2. If not, you can send your questions to jalnliu@lbl.gov
 
-#Citation
+# Citation
 J.L. Liu, E. Racah, Q. Koziol, R. S. Canon, A. Gittens, L. Gerhardt, S. Byna, M. F. Ringenburg, Prabhat. "H5Spark: Bridging the I/O Gap between Spark and Scientific Data Formats on HPC Systems", Cray User Group, 2016, ([Paper](https://github.com/valiantljk/h5spark/files/261834/h5spark-cug16-final.pdf),
 [Slides](https://github.com/valiantljk/h5spark/files/261837/h5spark-2016-cug.pdf),
 [Bib](https://github.com/valiantljk/h5spark/files/261861/h5spark.bib.txt))
 
-#Highlight
+# Highlight
 1. Tested at full scale on Cori phase 1, with 1600 nodes, 51200 cores. H5Spark took 2 minutes to load 16 TBs HDF5 2D data
 2. H5Spark takes 35 seconds in loading 2 TB data, while MPI uses 15 seconds. 
 
-#Try Other HDF5/netCDF plugin used in Spark
+# Try Other HDF5/netCDF plugin used in Spark
 1. LLNL: [Spark-HDF5](https://github.com/LLNL/spark-hdf5)
 2. NASA: [SciSpark](https://github.com/SciSpark/SciSpark)

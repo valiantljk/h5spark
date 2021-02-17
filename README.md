@@ -112,6 +112,8 @@ J.L. Liu, E. Racah, Q. Koziol, R. S. Canon, A. Gittens, L. Gerhardt, S. Byna, M.
 [Slides](https://github.com/valiantljk/h5spark/files/261837/h5spark-2016-cug.pdf),
 [Bib](https://github.com/valiantljk/h5spark/files/261861/h5spark.bib.txt))
 
+Alex Gittens, Aditya Devarakonda, Evan Racah, Michael Ringenburg, Lisa Gerhardt, Jey Kottalam, Jialin Liu, Kristyn Maschhoff, Shane Canon, Jatin Chhugani, Pramod Sharma, Jiyan Yang, James Demmel, Jim Harrell, Venkat Krishnamurthy, Michael W Mahoney. "Matrix Factorizations at Scale: A Comparison of Scientific Data Analytics in Spark and C+ MPI using Three Case Studies". IEEE BigData 2016. [Paper](https://ieeexplore.ieee.org/abstract/document/7840606/). 
+
 # Highlight
 1. Tested at full scale on Cori phase 1, with 1600 nodes, 51200 cores. H5Spark took 2 minutes to load 16 TBs HDF5 2D data
 2. H5Spark takes 35 seconds in loading 2 TB data, while MPI uses 15 seconds. 
